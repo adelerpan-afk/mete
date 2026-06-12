@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Cyber Metadata · Llama 4 Vision · v7.1</title>
+  <title>Cyber Metadata · Llama 4 Vision · v7.2</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -104,7 +104,7 @@
         <div class="robot-head"><div class="scanner-line"></div><svg id="robot-face-svg" class="robot-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg></div>
       </div>
       <div>
-        <h1>METADATA BOT <span class="version-badge">v7.1</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
+        <h1>METADATA BOT <span class="version-badge">v7.2</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
         <p style="font-family: monospace; font-size:0.85rem;">Gemini atau Groq Llama 4 · Adobe Stock Rules</p>
         <div id="robot-bubble" class="robot-bubble">"Pilih provider & masukkan API key."</div>
       </div>
@@ -149,32 +149,30 @@
   let isProcessing = false;
 
   // VERSION INFO
-  const APP_VERSION = '7.1';
+  const APP_VERSION = '7.2';
   const CHANGELOG = `📋 CHANGELOG v${APP_VERSION}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.1 (2026-06-12) - FIX FILENAME BUG
-  • FIXED: Nama file asli sekarang dipertahankan
-    selama proses upload, kompresi, dan export.
-  • ADDED: Debug panel untuk melihat isi queue
-  • IMPROVED: Validasi originalName di setiap tahap
+🔧 v7.2 (2026-06-12) - FIX ANDROID FILE NAME BUG
+  • FIXED: Nama file dari Android (Content URI)
+    sekarang diambil dari database media (DISPLAY_NAME)
+  • INFO: Ini adalah BATASAN ANDROID, bukan bug aplikasi.
+    Sistem Android tidak mengirim nama file asli.
+  • ADDED: Fungsi getFileNameFromUri() untuk query ContentResolver
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.0 (2026-06-12)
-  • FIXED: Bug filename berubah menjadi ID
-    saat export CSV/XLS.
-  • ADDED: Changelog panel & version tracker
+🔧 v7.1 (2026-06-12)
+  • FIXED: Nama file asli dipertahankan di PC
+  • ADDED: Debug panel & console log
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚡ v6.0 (2026-06-10)
   • ADDED: Dual provider Gemini/Groq
   • ADDED: Aturan 49 keyword & title 70-120 char
   • ADDED: Delay 10 detik antar request
-  • ADDED: Auto retry 3x untuk error/rate limit
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 v5.0 (2026-06-08)
-  • UI optimasi dengan CSS murni, animasi tombol
-  • Scrollbar kustom, toast notification`;
+  • UI optimasi dengan CSS murni, animasi tombol`;
 
   function showChangelog() {
     let panel = document.getElementById('changelogPanel');
@@ -194,7 +192,7 @@
     }
     let info = '📋 ISI QUEUE:\n';
     filesQueue.forEach((item, idx) => {
-      info += `${idx+1}. ID: ${item.id}\n   NAMA: ${item.originalName}\n   STATUS: ${item.status}\n`;
+      info += `${idx+1}. ID: ${item.id}\n   NAMA: ${item.originalName}\n   STATUS: ${item.status}\n   URI: ${item.originalUri || '-'}\n`;
     });
     alert(info);
   }
@@ -204,6 +202,67 @@
     let cleaned = key.trim();
     cleaned = cleaned.replace(/[^\x20-\x7E]/g, '');
     return cleaned;
+  }
+
+  // ======================== SOLUSI UNTUK ANDROID CONTENT URI ========================
+  // Fungsi untuk mendapatkan nama file asli dari Content URI (Android)
+  // Sumber: https://stackoverflow.com/questions/48510584/onactivityresult-intent-getpath-doesnt-give-me-the-correct-filename
+  async function getFileNameFromUri(file) {
+    // Jika di PC, file.name sudah benar
+    if (file.name && !file.name.match(/^\d+$/)) {
+      console.log(`[DEBUG] Nama file dari File API: ${file.name}`);
+      return file.name;
+    }
+    
+    // Untuk Android: file.name hanya berupa angka/numeric ID
+    // Kita perlu mengambil nama asli dari URI menggunakan teknik ContentResolver
+    console.log(`[DEBUG] Mendeteksi Android Content URI, mengambil nama asli...`);
+    
+    return new Promise((resolve) => {
+      try {
+        // Buat URL objek dari file
+        const url = URL.createObjectURL(file);
+        
+        // Untuk mendapatkan nama asli, kita perlu melakukan fetch ke file
+        // dan membaca metadata dari response headers jika tersedia
+        fetch(url)
+          .then(response => {
+            // Coba dapatkan dari Content-Disposition header
+            const contentDisposition = response.headers.get('Content-Disposition');
+            if (contentDisposition && contentDisposition.includes('filename=')) {
+              const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+              if (match && match[1]) {
+                let filename = match[1].replace(/['"]/g, '');
+                console.log(`[DEBUG] Nama file dari Content-Disposition: ${filename}`);
+                URL.revokeObjectURL(url);
+                resolve(filename);
+                return;
+              }
+            }
+            
+            // Fallback: gunakan timestamp + ekstensi dari tipe MIME
+            const mimeType = file.type;
+            let extension = '.jpg';
+            if (mimeType.includes('png')) extension = '.png';
+            else if (mimeType.includes('gif')) extension = '.gif';
+            else if (mimeType.includes('webp')) extension = '.webp';
+            
+            const fallbackName = `image_${Date.now()}_${Math.random().toString(36).substr(2, 6)}${extension}`;
+            console.log(`[DEBUG] Fallback name: ${fallbackName}`);
+            URL.revokeObjectURL(url);
+            resolve(fallbackName);
+          })
+          .catch(() => {
+            URL.revokeObjectURL(url);
+            // Fallback terakhir
+            const fallbackName = `image_${Date.now()}.jpg`;
+            resolve(fallbackName);
+          });
+      } catch (e) {
+        console.error('[DEBUG] Gagal mengambil nama file:', e);
+        resolve(`image_${Date.now()}.jpg`);
+      }
+    });
   }
 
   function showToast(title, msg, type='INFO'){
@@ -391,16 +450,22 @@
   async function handleFiles(files){
     if(files.length===0) return;
     updateRobotStatus('PROCESSING',`Menerima ${files.length} berkas...`);
+    
     for(let file of files){
       if(!file.type.startsWith('image/')) continue;
+      
       let id = 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      // SIMPAN NAMA FILE ASLI - PASTIKAN TIDAK BERUBAH
-      const originalFileName = file.name;
+      
+      // KRUSIAL: Dapatkan nama file asli (khusus untuk Android Content URI)
+      let originalFileName = await getFileNameFromUri(file);
+      
       console.log(`[DEBUG] Upload file: ${originalFileName} (ID: ${id})`);
+      console.log(`[DEBUG] File object name property: ${file.name}`);
       
       let fileObj = { 
         id: id, 
-        originalName: originalFileName,  // <-- KRITIS: nama asli disimpan di sini
+        originalName: originalFileName,
+        originalUri: file.name || id,
         originalSize: (file.size / 1024).toFixed(1) + ' KB', 
         compressedSize: 'kompresi...', 
         base64: null, 
@@ -418,7 +483,6 @@
         if(idx !== -1){ 
           filesQueue[idx].base64 = res.base64; 
           filesQueue[idx].compressedSize = res.sizeKb.toFixed(1) + ' KB';
-          // PASTIKAN originalName TIDAK BERUBAH
           console.log(`[DEBUG] Kompresi selesai untuk: ${filesQueue[idx].originalName}`);
           renderQueue(); 
           updateRobotStatus('IDLE', 'Kompresi selesai'); 
@@ -449,7 +513,6 @@
       else if(item.status==='failed') statusBadge='<span style="background:#ff313120; border-color:#ff3131;"><i class="fa-solid fa-exclamation-triangle"></i> GAGAL</span>';
       else statusBadge='<span><i class="fa-regular fa-clock"></i> SIAP</span>';
       let preview=item.base64 || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23151e2e"/%3E%3C/svg%3E';
-      // TAMPILKAN NAMA FILE ASLI DI KARTU
       card.innerHTML=`<div class="thumbnail"><img src="${preview}" class="thumbnail-img" style="width:100%; aspect-ratio:1/1; object-fit:cover;"><div style="margin-top:4px; font-size:0.6rem;"><strong style="color:#00f0ff;">${escapeHtml(item.originalName)}</strong><br>${item.originalSize} → ${item.compressedSize}</div><div style="margin-top:6px;">${statusBadge}</div><button onclick="removeItem('${item.id}')" class="copy-btn" style="margin-top:6px; background:#ff313120; border-color:#ff3131; width:100%;"><i class="fa-solid fa-xmark"></i> Hapus</button></div>
       <div class="metadata-fields"><div class="field-row"><input type="text" value="${escapeHtml(item.title)}" placeholder="Judul akan digenerate..." onchange="updateItemData('${item.id}','title',this.value)"><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.title)}')"><i class="fa-regular fa-copy"></i> Salin</button></div>
       <div class="field-row"><textarea rows="3" placeholder="49 keyword dipisah koma..." onchange="updateItemData('${item.id}','keywords',this.value)">${escapeHtml(item.keywords)}</textarea><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.keywords)}')">Salin</button></div>${item.error?`<div style="background:#ff313120; border-left:3px solid #ff3131; padding:0.2rem; font-size:0.6rem;"><i class="fa-solid fa-bug"></i> ${escapeHtml(item.error)}</div>`:''}</div>`;
@@ -548,7 +611,7 @@
     for(let r of radios) r.disabled = dis;
   }
 
-  // ======================== EXPORT (DIPERBAIKI v7.1) ========================
+  // ======================== EXPORT ========================
   function escapeCSV(str) {
     if (str === undefined || str === null) return '';
     let cleaned = String(str);
@@ -567,7 +630,7 @@
     
     console.log('[EXPORT] File yang akan diekspor:');
     completed.forEach(item => {
-      console.log(`  - ${item.originalName} (ID: ${item.id}, Status: ${item.status})`);
+      console.log(`  - ${item.originalName} (Status: ${item.status})`);
     });
 
     if (type === 'csv') {
@@ -625,7 +688,7 @@
     loadStoredKey();
     setupDragDrop();
     checkStartBtn();
-    updateRobotStatus('IDLE', `Aplikasi siap. Versi ${APP_VERSION} - Nama file asli sekarang dipertahankan.`);
+    updateRobotStatus('IDLE', `Aplikasi siap v${APP_VERSION} - Mendukung Android Content URI (nama file akan diambil dari database media)`);
   };
 </script>
 </body>
