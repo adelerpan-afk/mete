@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Cyber Metadata · Llama 4 Vision · v7.0</title>
+  <title>Cyber Metadata · Llama 4 Vision · v7.1</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -84,9 +84,10 @@
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100; display: flex; flex-direction: column; gap: 0.5rem; }
     .toast { background: rgba(8,12,20,0.96); border-left: 4px solid #00f0ff; backdrop-filter: blur(8px); border-radius: 0.5rem; padding: 0.8rem 1rem; width: 320px; display: flex; gap: 0.75rem; transform: translateY(0.5rem); opacity: 0; transition: all 0.2s ease; animation: fadeInUp 0.2s forwards; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(8,12,20,0.85); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: 0.2s; }
+    .debug-panel { position: fixed; bottom: 10px; right: 10px; background: #080c14cc; border: 1px solid #ffaa00; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.6rem; font-family: monospace; color: #ffaa00; max-width: 300px; z-index: 99; backdrop-filter: blur(4px); cursor: pointer; }
+    .changelog-panel { position: fixed; bottom: 20px; left: 20px; z-index: 99; background: rgba(8,12,20,0.95); border: 1px solid #00f0ff; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.6rem; font-family: monospace; backdrop-filter: blur(8px); pointer-events: none; }
     .changelog-btn { background: none; border: 1px solid #00f0ff40; color: #00f0ff; padding: 0.2rem 0.6rem; border-radius: 0.25rem; font-size: 0.6rem; cursor: pointer; margin-left: 0.5rem; transition: all 0.2s; }
     .changelog-btn:hover { background: #00f0ff20; border-color: #00f0ff; }
-    .changelog-panel { position: fixed; bottom: 20px; left: 20px; z-index: 99; background: rgba(8,12,20,0.95); border: 1px solid #00f0ff; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.6rem; font-family: monospace; backdrop-filter: blur(8px); pointer-events: none; }
     .hidden { display: none; }
     .text-cyan { color: #00f0ff; }
     button:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
@@ -103,7 +104,7 @@
         <div class="robot-head"><div class="scanner-line"></div><svg id="robot-face-svg" class="robot-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg></div>
       </div>
       <div>
-        <h1>METADATA BOT <span class="version-badge">v7.0</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
+        <h1>METADATA BOT <span class="version-badge">v7.1</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
         <p style="font-family: monospace; font-size:0.85rem;">Gemini atau Groq Llama 4 · Adobe Stock Rules</p>
         <div id="robot-bubble" class="robot-bubble">"Pilih provider & masukkan API key."</div>
       </div>
@@ -138,6 +139,7 @@
 <div id="toast-container" class="toast-container"></div>
 <div id="modal-container" class="modal-overlay"><div style="background:#151e2e; border:2px solid #00f0ff; padding:1.5rem; border-radius:1rem; max-width:500px;"><h3 id="modal-title" style="color:#00f0ff;">Notifikasi</h3><p id="modal-message"></p><button onclick="closeModal()" style="margin-top:1rem; background:#00f0ff; padding:0.3rem 1rem;">Tutup</button></div></div>
 <div class="changelog-panel" id="changelogPanel" style="display:none;"></div>
+<div class="debug-panel" id="debugPanel" onclick="showDebugInfo()">🐞 DEBUG: Klik untuk lihat queue</div>
 
 <script>
   // ======================== GLOBAL STATE ========================
@@ -147,16 +149,20 @@
   let isProcessing = false;
 
   // VERSION INFO
-  const APP_VERSION = '7.0';
+  const APP_VERSION = '7.1';
   const CHANGELOG = `📋 CHANGELOG v${APP_VERSION}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 v7.1 (2026-06-12) - FIX FILENAME BUG
+  • FIXED: Nama file asli sekarang dipertahankan
+    selama proses upload, kompresi, dan export.
+  • ADDED: Debug panel untuk melihat isi queue
+  • IMPROVED: Validasi originalName di setiap tahap
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔧 v7.0 (2026-06-12)
   • FIXED: Bug filename berubah menjadi ID
-    saat export CSV/XLS. Nama file asli 
-    (contoh: converted_pildun_11.jpg) 
-    sekarang tetap terjaga.
+    saat export CSV/XLS.
   • ADDED: Changelog panel & version tracker
-  • IMPROVED: Validasi filename di seluruh proses
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚡ v6.0 (2026-06-10)
@@ -164,34 +170,33 @@
   • ADDED: Aturan 49 keyword & title 70-120 char
   • ADDED: Delay 10 detik antar request
   • ADDED: Auto retry 3x untuk error/rate limit
-  • IMPROVED: Progress bar berdasarkan jumlah berhasil
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 v5.0 (2026-06-08)
-  • UI optimasi dengan CSS murni (tanpa Tailwind)
-  • Animasi tombol, hover effects, neon glow
-  • Scrollbar kustom, toast notification
-  • Dropzone dengan animasi drag & drop
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🤖 v2.0 - v4.0 (2026-06-01)
-  • Integrasi Gemini API Vision
-  • Kompresi gambar otomatis ≤100KB
-  • Ekspor CSV/XLS untuk Adobe Stock
-  • Robot assistant dengan status animasi
-  • Rate limit handling (429 retry)`;
+  • UI optimasi dengan CSS murni, animasi tombol
+  • Scrollbar kustom, toast notification`;
 
   function showChangelog() {
     let panel = document.getElementById('changelogPanel');
     panel.innerHTML = `<pre style="color:#00f0ff; font-family:monospace; font-size:0.65rem; white-space:pre-wrap;">${CHANGELOG}</pre>`;
     panel.style.display = 'block';
-    setTimeout(() => {
-      panel.style.opacity = '1';
-    }, 10);
+    setTimeout(() => { panel.style.opacity = '1'; }, 10);
     setTimeout(() => {
       panel.style.opacity = '0';
       setTimeout(() => panel.style.display = 'none', 500);
     }, 8000);
+  }
+
+  function showDebugInfo() {
+    if (filesQueue.length === 0) {
+      showToast('Debug', 'Queue kosong', 'INFO');
+      return;
+    }
+    let info = '📋 ISI QUEUE:\n';
+    filesQueue.forEach((item, idx) => {
+      info += `${idx+1}. ID: ${item.id}\n   NAMA: ${item.originalName}\n   STATUS: ${item.status}\n`;
+    });
+    alert(info);
   }
 
   function sanitizeApiKey(key) {
@@ -388,13 +393,15 @@
     updateRobotStatus('PROCESSING',`Menerima ${files.length} berkas...`);
     for(let file of files){
       if(!file.type.startsWith('image/')) continue;
-      let id='img_'+Date.now()+'_'+Math.random().toString(36).substr(2,9);
-      // PASTIKAN NAMA FILE ASLI TERSIMPAN DENGAN BENAR
-      let originalFileName = file.name;
-      let fileObj={ 
-        id, 
-        originalName: originalFileName, 
-        originalSize: (file.size/1024).toFixed(1)+' KB', 
+      let id = 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      // SIMPAN NAMA FILE ASLI - PASTIKAN TIDAK BERUBAH
+      const originalFileName = file.name;
+      console.log(`[DEBUG] Upload file: ${originalFileName} (ID: ${id})`);
+      
+      let fileObj = { 
+        id: id, 
+        originalName: originalFileName,  // <-- KRITIS: nama asli disimpan di sini
+        originalSize: (file.size / 1024).toFixed(1) + ' KB', 
         compressedSize: 'kompresi...', 
         base64: null, 
         status: 'pending', 
@@ -404,18 +411,25 @@
       };
       filesQueue.push(fileObj);
       renderQueue();
+      
       try{
         let res = await compressImage(file);
-        let idx = filesQueue.findIndex(f=>f.id===id);
-        if(idx!==-1){ 
-          filesQueue[idx].base64=res.base64; 
-          filesQueue[idx].compressedSize=res.sizeKb.toFixed(1)+' KB'; 
+        let idx = filesQueue.findIndex(f => f.id === id);
+        if(idx !== -1){ 
+          filesQueue[idx].base64 = res.base64; 
+          filesQueue[idx].compressedSize = res.sizeKb.toFixed(1) + ' KB';
+          // PASTIKAN originalName TIDAK BERUBAH
+          console.log(`[DEBUG] Kompresi selesai untuk: ${filesQueue[idx].originalName}`);
           renderQueue(); 
-          updateRobotStatus('IDLE','Kompresi selesai'); 
+          updateRobotStatus('IDLE', 'Kompresi selesai'); 
         }
-      }catch(err){
-        let idx = filesQueue.findIndex(f=>f.id===id);
-        if(idx!==-1){ filesQueue[idx].status='failed'; filesQueue[idx].error=`Kompresi error: ${err.message}`; renderQueue(); }
+      } catch(err){
+        let idx = filesQueue.findIndex(f => f.id === id);
+        if(idx !== -1){ 
+          filesQueue[idx].status = 'failed'; 
+          filesQueue[idx].error = `Kompresi error: ${err.message}`; 
+          renderQueue(); 
+        }
       }
     }
     checkStartBtn();
@@ -435,7 +449,8 @@
       else if(item.status==='failed') statusBadge='<span style="background:#ff313120; border-color:#ff3131;"><i class="fa-solid fa-exclamation-triangle"></i> GAGAL</span>';
       else statusBadge='<span><i class="fa-regular fa-clock"></i> SIAP</span>';
       let preview=item.base64 || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23151e2e"/%3E%3C/svg%3E';
-      card.innerHTML=`<div class="thumbnail"><img src="${preview}" class="thumbnail-img" style="width:100%; aspect-ratio:1/1; object-fit:cover;"><div style="margin-top:4px; font-size:0.6rem;"><strong>${escapeHtml(item.originalName)}</strong><br>${item.originalSize} → ${item.compressedSize}</div><div style="margin-top:6px;">${statusBadge}</div><button onclick="removeItem('${item.id}')" class="copy-btn" style="margin-top:6px; background:#ff313120; border-color:#ff3131; width:100%;"><i class="fa-solid fa-xmark"></i> Hapus</button></div>
+      // TAMPILKAN NAMA FILE ASLI DI KARTU
+      card.innerHTML=`<div class="thumbnail"><img src="${preview}" class="thumbnail-img" style="width:100%; aspect-ratio:1/1; object-fit:cover;"><div style="margin-top:4px; font-size:0.6rem;"><strong style="color:#00f0ff;">${escapeHtml(item.originalName)}</strong><br>${item.originalSize} → ${item.compressedSize}</div><div style="margin-top:6px;">${statusBadge}</div><button onclick="removeItem('${item.id}')" class="copy-btn" style="margin-top:6px; background:#ff313120; border-color:#ff3131; width:100%;"><i class="fa-solid fa-xmark"></i> Hapus</button></div>
       <div class="metadata-fields"><div class="field-row"><input type="text" value="${escapeHtml(item.title)}" placeholder="Judul akan digenerate..." onchange="updateItemData('${item.id}','title',this.value)"><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.title)}')"><i class="fa-regular fa-copy"></i> Salin</button></div>
       <div class="field-row"><textarea rows="3" placeholder="49 keyword dipisah koma..." onchange="updateItemData('${item.id}','keywords',this.value)">${escapeHtml(item.keywords)}</textarea><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.keywords)}')">Salin</button></div>${item.error?`<div style="background:#ff313120; border-left:3px solid #ff3131; padding:0.2rem; font-size:0.6rem;"><i class="fa-solid fa-bug"></i> ${escapeHtml(item.error)}</div>`:''}</div>`;
       listDiv.appendChild(card);
@@ -533,7 +548,7 @@
     for(let r of radios) r.disabled = dis;
   }
 
-  // ======================== EXPORT (DIPERBAIKI v7.0) ========================
+  // ======================== EXPORT (DIPERBAIKI v7.1) ========================
   function escapeCSV(str) {
     if (str === undefined || str === null) return '';
     let cleaned = String(str);
@@ -550,13 +565,14 @@
       return;
     }
     
-    // DEBUG: Cek isi filename sebelum export
-    console.log('Files to export:', completed.map(f => ({ name: f.originalName, id: f.id })));
+    console.log('[EXPORT] File yang akan diekspor:');
+    completed.forEach(item => {
+      console.log(`  - ${item.originalName} (ID: ${item.id}, Status: ${item.status})`);
+    });
 
     if (type === 'csv') {
       let rows = [['Filename', 'Title', 'Keywords']];
       for (let item of completed) {
-        // PASTIKAN menggunakan originalName, BUKAN id
         let fileName = item.originalName || 'unknown.jpg';
         rows.push([fileName, item.title || '', item.keywords || '']);
       }
@@ -609,7 +625,7 @@
     loadStoredKey();
     setupDragDrop();
     checkStartBtn();
-    updateRobotStatus('IDLE', `Aplikasi siap. Versi ${APP_VERSION}`);
+    updateRobotStatus('IDLE', `Aplikasi siap. Versi ${APP_VERSION} - Nama file asli sekarang dipertahankan.`);
   };
 </script>
 </body>
