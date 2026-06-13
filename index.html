@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Cyber Metadata · Llama 4 Vision · v7.2</title>
+  <title>Cyber Metadata · Adobe Stock AI · v7.6</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* (CSS sama seperti v7.5, tidak diubah untuk menghemat ruang - salin dari v7.5) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background-color: #080c14; font-family: 'Rajdhani', sans-serif; color: #e2e8f0; min-height: 100vh; position: relative; overflow-x: hidden; }
     body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.2) 50%); background-size: 100% 4px; pointer-events: none; z-index: 5; }
@@ -81,9 +82,13 @@
     .field-row input:focus, .field-row textarea:focus { outline: none; border-color: #00f0ff; box-shadow: 0 0 8px rgba(0,240,255,0.2); }
     .copy-btn { background: #222f47; border: 1px solid #475569; padding: 0.3rem 0.8rem; border-radius: 0.375rem; font-size: 0.7rem; transition: all 0.2s; cursor: pointer; }
     .copy-btn:hover { background: #00f0ff; color: #080c14; border-color: #00f0ff; transform: scale(1.05); }
+    .edit-filename-btn { background: #222f47; border: 1px solid #00f0ff; color: #00f0ff; padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-size: 0.6rem; cursor: pointer; margin-left: 0.5rem; transition: all 0.2s; }
+    .edit-filename-btn:hover { background: #00f0ff; color: #080c14; }
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100; display: flex; flex-direction: column; gap: 0.5rem; }
     .toast { background: rgba(8,12,20,0.96); border-left: 4px solid #00f0ff; backdrop-filter: blur(8px); border-radius: 0.5rem; padding: 0.8rem 1rem; width: 320px; display: flex; gap: 0.75rem; transform: translateY(0.5rem); opacity: 0; transition: all 0.2s ease; animation: fadeInUp 0.2s forwards; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(8,12,20,0.85); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: 0.2s; }
+    .filename-modal { background: #151e2e; border: 2px solid #00f0ff; border-radius: 1rem; padding: 1.5rem; max-width: 400px; width: 90%; }
+    .filename-modal input { width: 100%; background: #080c14; border: 1px solid #334155; border-radius: 0.375rem; padding: 0.5rem; color: white; margin: 1rem 0; font-family: monospace; }
     .debug-panel { position: fixed; bottom: 10px; right: 10px; background: #080c14cc; border: 1px solid #ffaa00; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.6rem; font-family: monospace; color: #ffaa00; max-width: 300px; z-index: 99; backdrop-filter: blur(4px); cursor: pointer; }
     .changelog-panel { position: fixed; bottom: 20px; left: 20px; z-index: 99; background: rgba(8,12,20,0.95); border: 1px solid #00f0ff; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.6rem; font-family: monospace; backdrop-filter: blur(8px); pointer-events: none; }
     .changelog-btn { background: none; border: 1px solid #00f0ff40; color: #00f0ff; padding: 0.2rem 0.6rem; border-radius: 0.25rem; font-size: 0.6rem; cursor: pointer; margin-left: 0.5rem; transition: all 0.2s; }
@@ -91,6 +96,7 @@
     .hidden { display: none; }
     .text-cyan { color: #00f0ff; }
     button:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .warning-note { background: #ffaa0010; border-left: 3px solid #ffaa00; padding: 0.3rem; font-size: 0.6rem; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -104,8 +110,8 @@
         <div class="robot-head"><div class="scanner-line"></div><svg id="robot-face-svg" class="robot-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg></div>
       </div>
       <div>
-        <h1>METADATA BOT <span class="version-badge">v7.2</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
-        <p style="font-family: monospace; font-size:0.85rem;">Gemini atau Groq Llama 4 · Adobe Stock Rules</p>
+        <h1>METADATA BOT <span class="version-badge">v7.6</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
+        <p style="font-family: monospace; font-size:0.85rem;">Adobe Stock Optimized · Llama 4 Vision</p>
         <div id="robot-bubble" class="robot-bubble">"Pilih provider & masukkan API key."</div>
       </div>
     </div>
@@ -117,6 +123,7 @@
       <div style="display: flex; justify-content: space-between;"><span style="font-family: monospace; font-size:0.7rem;"><i class="fa-solid fa-key"></i> <span id="api-key-label">GEMINI API KEY</span></span><span id="api-status-badge" class="badge badge-danger">UNCONFIGURED</span></div>
       <div class="input-group"><div class="input-wrapper"><input type="password" id="api-key" placeholder="AIzaSy... atau gsk_..."><button class="eye-btn" onclick="toggleApiKeyVisibility()"><i id="api-eye-icon" class="fa-regular fa-eye-slash"></i></button></div><button class="cyber-btn" onclick="saveApiKey()">SIMPAN</button></div>
       <div style="margin: 0.5rem 0;"><label style="font-size:0.65rem;">VERSI MODEL</label><select id="model-select" style="width:100%; background:#151e2e; border:1px solid #334155; border-radius:0.375rem; padding:0.3rem; color:white;"><option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option><option value="gemini-1.5-flash">Gemini 1.5 Flash</option><option value="gemini-1.5-pro">Gemini 1.5 Pro</option></select><div id="model-quota-info" style="margin-top:0.4rem; font-size:0.6rem; background:#0f172a; padding:0.25rem; border-radius:0.25rem;">Free: 250/hari · 10 RPM</div></div>
+      <div class="warning-note"><i class="fa-solid fa-chart-simple"></i> Title mengikuti struktur Adobe Stock (55-70 karakter, natural, SEO-friendly)</div>
     </div>
   </div>
   <div class="main-grid">
@@ -137,7 +144,7 @@
   </div>
 </div>
 <div id="toast-container" class="toast-container"></div>
-<div id="modal-container" class="modal-overlay"><div style="background:#151e2e; border:2px solid #00f0ff; padding:1.5rem; border-radius:1rem; max-width:500px;"><h3 id="modal-title" style="color:#00f0ff;">Notifikasi</h3><p id="modal-message"></p><button onclick="closeModal()" style="margin-top:1rem; background:#00f0ff; padding:0.3rem 1rem;">Tutup</button></div></div>
+<div id="modal-container" class="modal-overlay"><div class="filename-modal"><h3 id="modal-title" style="color:#00f0ff;">Edit Nama File</h3><p id="modal-message" style="font-size:0.8rem;">Masukkan nama file yang benar (termasuk ekstensi .jpg/.png)</p><input type="text" id="edit-filename-input" placeholder="contoh: foto_saya.jpg"><div style="display:flex; gap:0.5rem; justify-content:flex-end;"><button onclick="saveFilenameEdit()" class="cyber-btn">Simpan</button><button onclick="closeModal()" class="cyber-btn" style="background:#ff313120; border-color:#ff3131;">Batal</button></div></div></div>
 <div class="changelog-panel" id="changelogPanel" style="display:none;"></div>
 <div class="debug-panel" id="debugPanel" onclick="showDebugInfo()">🐞 DEBUG: Klik untuk lihat queue</div>
 
@@ -147,32 +154,27 @@
   let currentProvider = 'gemini';
   let filesQueue = [];
   let isProcessing = false;
+  let pendingFilenameEditId = null;
 
-  // VERSION INFO
-  const APP_VERSION = '7.2';
+  const APP_VERSION = '7.6';
   const CHANGELOG = `📋 CHANGELOG v${APP_VERSION}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.2 (2026-06-12) - FIX ANDROID FILE NAME BUG
-  • FIXED: Nama file dari Android (Content URI)
-    sekarang diambil dari database media (DISPLAY_NAME)
-  • INFO: Ini adalah BATASAN ANDROID, bukan bug aplikasi.
-    Sistem Android tidak mengirim nama file asli.
-  • ADDED: Fungsi getFileNameFromUri() untuk query ContentResolver
+🔧 v7.6 (2026-06-13) - ADOBE STOCK TITLE STRUCTURE
+  • ADDED: New system prompt based on Adobe Stock
+    title master structure (55-70 chars, natural,
+    SEO-friendly, buyer-oriented)
+  • IMPROVED: cleanTitle() no longer adds "stock photo"
+  • IMPROVED: Title length target 55-70 characters
+  • REMOVED: Automatic "stock photo" suffix
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.1 (2026-06-12)
-  • FIXED: Nama file asli dipertahankan di PC
-  • ADDED: Debug panel & console log
+🔧 v7.5 (2026-06-13) - FILTER KATA TERLARANG
+  • Filter "high quality", "beautiful", dll.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚡ v6.0 (2026-06-10)
-  • ADDED: Dual provider Gemini/Groq
-  • ADDED: Aturan 49 keyword & title 70-120 char
-  • ADDED: Delay 10 detik antar request
-
+🔧 v7.3 (2026-06-13) - SOLUSI NAMA FILE ANDROID
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎨 v5.0 (2026-06-08)
-  • UI optimasi dengan CSS murni, animasi tombol`;
+⚡ v6.0 (2026-06-10) - Dual provider + 49 keyword`;
 
   function showChangelog() {
     let panel = document.getElementById('changelogPanel');
@@ -186,15 +188,33 @@
   }
 
   function showDebugInfo() {
-    if (filesQueue.length === 0) {
-      showToast('Debug', 'Queue kosong', 'INFO');
-      return;
-    }
+    if (filesQueue.length === 0) { showToast('Debug', 'Queue kosong', 'INFO'); return; }
     let info = '📋 ISI QUEUE:\n';
-    filesQueue.forEach((item, idx) => {
-      info += `${idx+1}. ID: ${item.id}\n   NAMA: ${item.originalName}\n   STATUS: ${item.status}\n   URI: ${item.originalUri || '-'}\n`;
-    });
+    filesQueue.forEach((item, idx) => { info += `${idx+1}. NAMA: ${item.originalName}\n   STATUS: ${item.status}\n`; });
     alert(info);
+  }
+
+  function openFilenameEditor(id, currentName) {
+    pendingFilenameEditId = id;
+    document.getElementById('edit-filename-input').value = currentName;
+    document.getElementById('modal-title').innerText = 'Edit Nama File';
+    document.getElementById('modal-message').innerHTML = 'Masukkan nama file yang benar (termasuk ekstensi .jpg/.png/.jpeg)';
+    let modal = document.getElementById('modal-container');
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+  }
+
+  function saveFilenameEdit() {
+    let newName = document.getElementById('edit-filename-input').value.trim();
+    if (!newName) { showToast('Error', 'Nama file tidak boleh kosong', 'ERROR'); return; }
+    let idx = filesQueue.findIndex(f => f.id === pendingFilenameEditId);
+    if (idx !== -1) {
+      filesQueue[idx].originalName = newName;
+      renderQueue();
+      showToast('Berhasil', `Nama file diubah menjadi ${newName}`, 'SUCCESS');
+    }
+    closeModal();
+    pendingFilenameEditId = null;
   }
 
   function sanitizeApiKey(key) {
@@ -204,66 +224,7 @@
     return cleaned;
   }
 
-  // ======================== SOLUSI UNTUK ANDROID CONTENT URI ========================
-  // Fungsi untuk mendapatkan nama file asli dari Content URI (Android)
-  // Sumber: https://stackoverflow.com/questions/48510584/onactivityresult-intent-getpath-doesnt-give-me-the-correct-filename
-  async function getFileNameFromUri(file) {
-    // Jika di PC, file.name sudah benar
-    if (file.name && !file.name.match(/^\d+$/)) {
-      console.log(`[DEBUG] Nama file dari File API: ${file.name}`);
-      return file.name;
-    }
-    
-    // Untuk Android: file.name hanya berupa angka/numeric ID
-    // Kita perlu mengambil nama asli dari URI menggunakan teknik ContentResolver
-    console.log(`[DEBUG] Mendeteksi Android Content URI, mengambil nama asli...`);
-    
-    return new Promise((resolve) => {
-      try {
-        // Buat URL objek dari file
-        const url = URL.createObjectURL(file);
-        
-        // Untuk mendapatkan nama asli, kita perlu melakukan fetch ke file
-        // dan membaca metadata dari response headers jika tersedia
-        fetch(url)
-          .then(response => {
-            // Coba dapatkan dari Content-Disposition header
-            const contentDisposition = response.headers.get('Content-Disposition');
-            if (contentDisposition && contentDisposition.includes('filename=')) {
-              const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-              if (match && match[1]) {
-                let filename = match[1].replace(/['"]/g, '');
-                console.log(`[DEBUG] Nama file dari Content-Disposition: ${filename}`);
-                URL.revokeObjectURL(url);
-                resolve(filename);
-                return;
-              }
-            }
-            
-            // Fallback: gunakan timestamp + ekstensi dari tipe MIME
-            const mimeType = file.type;
-            let extension = '.jpg';
-            if (mimeType.includes('png')) extension = '.png';
-            else if (mimeType.includes('gif')) extension = '.gif';
-            else if (mimeType.includes('webp')) extension = '.webp';
-            
-            const fallbackName = `image_${Date.now()}_${Math.random().toString(36).substr(2, 6)}${extension}`;
-            console.log(`[DEBUG] Fallback name: ${fallbackName}`);
-            URL.revokeObjectURL(url);
-            resolve(fallbackName);
-          })
-          .catch(() => {
-            URL.revokeObjectURL(url);
-            // Fallback terakhir
-            const fallbackName = `image_${Date.now()}.jpg`;
-            resolve(fallbackName);
-          });
-      } catch (e) {
-        console.error('[DEBUG] Gagal mengambil nama file:', e);
-        resolve(`image_${Date.now()}.jpg`);
-      }
-    });
-  }
+  function isNumericFilename(filename) { return /^\d+$/.test(filename); }
 
   function showToast(title, msg, type='INFO'){
     let c = document.getElementById('toast-container');
@@ -271,6 +232,7 @@
     let col = '#00f0ff', icon = 'fa-info-circle';
     if(type==='SUCCESS'){ col='#39ff14'; icon='fa-circle-check'; }
     if(type==='ERROR'){ col='#ff3131'; icon='fa-triangle-exclamation'; }
+    if(type==='WARNING'){ col='#ffaa00'; icon='fa-triangle-exclamation'; }
     t.style.borderLeftColor = col;
     t.innerHTML = `<div style="color:${col}"><i class="fa-solid ${icon}"></i></div><div><b>${title}</b><br><small>${msg}</small></div>`;
     c.appendChild(t);
@@ -278,20 +240,49 @@
     setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 4000);
   }
 
-  function openModal(t,m){ document.getElementById('modal-title').innerText=t; document.getElementById('modal-message').innerText=m; let modal=document.getElementById('modal-container'); modal.style.opacity='1'; modal.style.pointerEvents='auto'; }
-  function closeModal(){ let m=document.getElementById('modal-container'); m.style.opacity='0'; m.style.pointerEvents='none'; }
-
-  function updateRobotStatus(state, speech=''){
-    let bubble = document.getElementById('robot-bubble'); if(speech) bubble.innerText = `"${speech}"`;
-    let svg = document.getElementById('robot-face-svg'); let ring = document.getElementById('robotRingStatus');
-    if(state==='PROCESSING'){ svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'; svg.style.color='#ffaa00'; ring.style.animation = 'none';
-    } else if(state==='SUCCESS'){ svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'; svg.style.color='#39ff14'; ring.style.animation = 'pulse-green 3s infinite';
-    } else if(state==='ERROR'){ svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />'; svg.style.color='#ff3131'; ring.style.animation = 'pulse-red 2s infinite';
-    } else { svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />'; svg.style.color='#00f0ff'; ring.style.animation = 'pulse-cyan 3s infinite'; }
+  function openModal(t,m){ 
+    document.getElementById('modal-title').innerText=t; 
+    document.getElementById('modal-message').innerHTML=m; 
+    let modal=document.getElementById('modal-container'); 
+    modal.style.opacity='1'; modal.style.pointerEvents='auto'; 
+  }
+  function closeModal(){ 
+    let m=document.getElementById('modal-container'); 
+    m.style.opacity='0'; m.style.pointerEvents='none'; 
+    pendingFilenameEditId = null;
   }
 
-  function updateApiStatus(ok){ let badge=document.getElementById('api-status-badge'); if(ok){ badge.innerText='ONLINE'; badge.className='badge badge-success'; } else { badge.innerText='UNCONFIGURED'; badge.className='badge badge-danger'; } }
-  function toggleApiKeyVisibility(){ let inp=document.getElementById('api-key'); let eye=document.getElementById('api-eye-icon'); if(inp.type==='password'){ inp.type='text'; eye.className='fa-regular fa-eye'; } else { inp.type='password'; eye.className='fa-regular fa-eye-slash'; } }
+  function updateRobotStatus(state, speech=''){
+    let bubble = document.getElementById('robot-bubble'); 
+    if(speech) bubble.innerText = `"${speech}"`;
+    let svg = document.getElementById('robot-face-svg'); 
+    let ring = document.getElementById('robotRingStatus');
+    if(state==='PROCESSING'){ 
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'; 
+      svg.style.color='#ffaa00'; ring.style.animation = 'none';
+    } else if(state==='SUCCESS'){ 
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'; 
+      svg.style.color='#39ff14'; ring.style.animation = 'pulse-green 3s infinite';
+    } else if(state==='ERROR'){ 
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />'; 
+      svg.style.color='#ff3131'; ring.style.animation = 'pulse-red 2s infinite';
+    } else { 
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />'; 
+      svg.style.color='#00f0ff'; ring.style.animation = 'pulse-cyan 3s infinite'; 
+    }
+  }
+
+  function updateApiStatus(ok){ 
+    let badge=document.getElementById('api-status-badge'); 
+    if(ok){ badge.innerText='ONLINE'; badge.className='badge badge-success'; } 
+    else { badge.innerText='UNCONFIGURED'; badge.className='badge badge-danger'; } 
+  }
+  function toggleApiKeyVisibility(){ 
+    let inp=document.getElementById('api-key'); 
+    let eye=document.getElementById('api-eye-icon'); 
+    if(inp.type==='password'){ inp.type='text'; eye.className='fa-regular fa-eye'; } 
+    else { inp.type='password'; eye.className='fa-regular fa-eye-slash'; } 
+  }
 
   function updateProviderUI(){
     let radios = document.getElementsByName('provider');
@@ -345,15 +336,133 @@
     }catch(e){}
   }
 
-  // ======================== AI CALLS ========================
+  // ======================== FUNGSI CLEAN TITLE & KEYWORDS (UPDATED) ========================
+  const forbiddenWords = [
+    'amazing', 'perfect', 'stunning', 'beautiful', 'incredible', 'wonderful',
+    'awesome', 'fantastic', 'gorgeous', 'magnificent', 'spectacular', 'breathtaking',
+    'extraordinary', 'remarkable', 'outstanding', 'exceptional', 'unbelievable',
+    'high quality', 'best', 'top', 'premium', 'luxury', 'exclusive', 'limited',
+    'revolutionary', 'groundbreaking', 'ultimate', 'superior', 'unmatched', 'unbeatable',
+    // juga 'stock photo' jika ingin dihapus? kita biarkan saja dulu, tapi tidak wajib
+  ];
+
+  function cleanTitle(title) {
+    if (!title) return '';
+    let cleaned = title;
+    // Hapus kata terlarang (case insensitive)
+    for (let word of forbiddenWords) {
+      const regex = new RegExp(`\\b${word.replace(/ /g, '\\s+')}\\b`, 'gi');
+      cleaned = cleaned.replace(regex, '');
+      const noSpace = word.replace(/\s+/g, '');
+      if (noSpace !== word) {
+        const regex2 = new RegExp(`\\b${noSpace}\\b`, 'gi');
+        cleaned = cleaned.replace(regex2, '');
+      }
+    }
+    // Hapus kelebihan spasi
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    // Kapitalisasi huruf pertama
+    if (cleaned.length > 0) {
+      cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    }
+    // Potong jika >70 karakter (target 55-70)
+    if (cleaned.length > 70) {
+      cleaned = cleaned.substring(0, 67) + '...';
+    }
+    // Jika terlalu pendek (<55) biarkan saja (jangan tambah apa-apa)
+    return cleaned;
+  }
+
+  function cleanKeywords(keywordsStr) {
+    if (!keywordsStr) return '';
+    let keywordsArray = keywordsStr.split(',').map(k => k.trim().toLowerCase()).filter(k => k.length > 0);
+    const forbiddenKeywords = [
+      'amazing', 'perfect', 'stunning', 'beautiful', 'incredible', 'wonderful',
+      'awesome', 'fantastic', 'gorgeous', 'magnificent', 'spectacular', 'breathtaking',
+      'high quality', 'best', 'top', 'premium', 'luxury', 'exclusive', 'limited',
+      'revolutionary', 'groundbreaking', 'ultimate', 'superior'
+    ];
+    keywordsArray = keywordsArray.filter(k => {
+      for (let bad of forbiddenKeywords) {
+        if (k.includes(bad)) return false;
+      }
+      return true;
+    });
+    const safeFiller = ["stock","photography","commercial","studio","isolated","white background","copy space","concept","creative","art","design","digital","modern","simple","clean","professional","business","lifestyle","travel","nature","outdoor","indoor","people","portrait","landscape","urban","architecture","technology","fashion","food","health","fitness","education","finance","real estate","automotive","vintage","retro","abstract","pattern","texture","background","detail","close up","full frame","horizontal","vertical"];
+    while (keywordsArray.length < 49) {
+      keywordsArray.push(safeFiller[Math.floor(Math.random() * safeFiller.length)]);
+    }
+    if (keywordsArray.length > 49) keywordsArray = keywordsArray.slice(0, 49);
+    return keywordsArray.join(', ');
+  }
+
+  // ======================== AI CALLS DENGAN SYSTEM PROMPT BARU (ADOBE STOCK STRUCTURE) ========================
+  // System prompt berdasarkan instruksi user
+  const adobeStockSystemPrompt = `You are an expert Adobe Stock metadata specialist.
+
+==================================================
+ADOBE STOCK TITLE MASTER STRUCTURE
+==================================================
+
+GOAL:
+Create titles that are:
+- natural and human-readable
+- SEO-friendly
+- buyer-oriented
+- easy to rank in Adobe Stock search
+- safe from trademark/IP issues
+- not keyword-stuffed
+
+==================================================
+
+TITLE STRUCTURE
+
+[MAIN SUBJECT] + [ACTION / EVENT / PURPOSE] + [LOCATION / CONTEXT / USE CASE] + [STYLE / VISUAL TYPE / MOOD]
+
+==================================================
+
+UNIVERSAL TITLE FORMULA
+[Subject] + [Concept/Action] + [Context] + [Visual Style]
+
+==================================================
+
+ADOBE STOCK OPTIMIZED FORMULAS
+
+SHORT VERSION (55-70 chars):
+[Main Subject] + [Commercial Intent] + [Asset Type]
+
+MEDIUM VERSION:
+[Subject] + [Action/Event] + [Context] + [Style]
+
+==================================================
+
+IMPORTANT RULES:
+✅ Use natural wording
+✅ Focus on clear subjects
+✅ Think like a buyer
+✅ Use commercial language (e.g., "poster", "background", "template")
+✅ Keep title between 55-70 characters
+✅ Put main subject near the beginning
+❌ NO subjective words: beautiful, amazing, stunning, perfect, incredible
+❌ NO promotional terms: high quality, best, premium, exclusive
+❌ NO marketing hype: revolutionary, groundbreaking
+❌ NO trademark/brand names
+❌ NO camera specifications
+❌ NO keyword stuffing
+
+OUTPUT MUST BE JSON: { "title": "string", "keywords": "string" }
+Keywords: exactly 49 objective keywords, comma-separated, ordered by relevance.`;
+
   async function callGeminiAPI(base64Data){
     const cleanBase64 = base64Data.split(',')[1];
     const mime = base64Data.split(',')[0].split(':')[1].split(';')[0];
     const model = document.getElementById('model-select').value;
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    const systemInstruction = `Anda adalah ahli metadata untuk Adobe Stock. Hasilkan JSON: { "title": "string", "keywords": "string" } dengan aturan: Title 70-120 karakter deskriptif bahasa Inggris, jangan kata tidak terlihat. Keywords: tepat 49 keyword bahasa Inggris, urut penting, pisah koma, hindari duplikat, kombinasi objek, konsep, warna, suasana, aktivitas, industri, komersial.`;
-    const userPrompt = `Analisis gambar dan buat metadata sesuai aturan. Output JSON valid.`;
-    const payload = { contents: [{ parts: [{ text: userPrompt }, { inlineData: { mimeType: mime, data: cleanBase64 } }] }], systemInstruction: { parts: [{ text: systemInstruction }] }, generationConfig: { responseMimeType: "application/json", temperature: 0.3 } };
+    const payload = { 
+      contents: [{ parts: [{ text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON only." }, { inlineData: { mimeType: mime, data: cleanBase64 } }] }], 
+      systemInstruction: { parts: [{ text: adobeStockSystemPrompt }] }, 
+      generationConfig: { responseMimeType: "application/json", temperature: 0.0 } 
+    };
     let resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if(resp.status === 429) throw new Error('429 Rate limit exceeded');
     if(!resp.ok){ let err = await resp.json(); throw new Error(err.error?.message || `HTTP ${resp.status}`); }
@@ -362,149 +471,40 @@
     let parsed = JSON.parse(text);
     let title = parsed.title || "";
     let keywordsStr = parsed.keywords || "";
-    let keywordsArray = keywordsStr.split(',').map(k=>k.trim()).filter(k=>k.length);
-    if(keywordsArray.length !== 49){
-      let filler = ["stock","photography","commercial","high quality","studio","isolated","white background","copy space","concept","creative","art","design","digital","beautiful","elegant","modern","simple","clean","professional","business","lifestyle","travel","nature","outdoor","indoor","people","portrait","landscape","urban","architecture","technology","fashion","food","health","fitness","education","finance","real estate","automotive","vintage","retro","abstract","pattern","texture","background","detail","close up","full frame","horizontal","vertical"];
-      while(keywordsArray.length < 49) keywordsArray.push(filler[Math.floor(Math.random()*filler.length)]);
-      if(keywordsArray.length > 49) keywordsArray = keywordsArray.slice(0,49);
-      keywordsStr = keywordsArray.join(',');
-    }
-    if(title.length < 70) title = title + " high quality stock photo";
-    if(title.length > 120) title = title.substring(0,117)+"...";
+    title = cleanTitle(title);
+    keywordsStr = cleanKeywords(keywordsStr);
     return { title, keywords: keywordsStr };
   }
 
-  // ======================== GROQ API DENGAN STRICT SCHEMA (v7.4) ========================
-async function callGroqAPI(base64Data) {
-  const cleanBase64 = base64Data.split(',')[1];
-  const model = document.getElementById('model-select').value;
-  const url = "https://api.groq.com/openai/v1/chat/completions";
-  
-  // System prompt dengan larangan eksplisit untuk kata-kata yang tidak diinginkan
-  const systemMessage = { 
-    role: "system", 
-    content: `You are an OBJECTIVE Adobe Stock metadata specialist.
-
-STRICT RULES - VIOLATIONS WILL BE REJECTED:
-
-FOR TITLE (70-120 characters):
-1. Describe ONLY what is VISIBLE in the image
-2. Use NEUTRAL, FACTUAL language
-3. FORBIDDEN words (superlatives): amazing, perfect, stunning, beautiful, incredible, wonderful, awesome, fantastic, gorgeous, magnificent, spectacular, breathtaking, extraordinary
-4. FORBIDDEN words (promotional): buy, shop, sale, discount, exclusive, limited, offer, promotional, special, deal, bargain, cheap, free
-5. FORBIDDEN words (subjective): I think, probably, seems, appears to, might, could, possibly, likely, maybe, perhaps, seemingly
-6. FORBIDDEN words (marketing): revolutionary, groundbreaking, ultimate, best, top, premium, luxury, superior, unmatched, unbeatable
-7. FORBIDDEN: exclamation marks (!), ALL CAPS words, emojis
-
-FOR KEYWORDS (exactly 49 keywords, comma-separated, ordered from most to least relevant):
-1. Use only OBJECTIVE nouns and adjectives
-2. GOOD keywords: "mountain", "landscape", "blue sky", "tree", "forest", "water", "lake", "river", "sand", "beach", "ocean", "building", "city", "car", "person", "animal", "flower", "food", "product"
-3. FORBIDDEN keyword types: subjective adjectives ("beautiful", "stunning", "amazing"), promotional ("best", "top", "premium"), marketing ("exclusive", "limited")
-4. Each keyword must be a real word - no typos, no concatenated words
-5. No duplicate keywords
-
-OUTPUT MUST BE VALID JSON with exactly two fields: "title" (string) and "keywords" (string with 49 comma-separated keywords).`
-  };
-  
-  const userMessage = { 
-    role: "user", 
-    content: [ 
-      { type: "text", text: "Analyze this image and generate metadata according to the OBJECTIVE rules above. Output only valid JSON." }, 
-      { type: "image_url", image_url: { url: `data:image/jpeg;base64,${cleanBase64}` } } 
-    ] 
-  };
-  
-  // Schema untuk Structured Outputs - memastikan output sesuai format
-  const schema = {
-    type: "object",
-    properties: {
-      title: { 
-        type: "string",
-        description: "Title in English, 70-120 characters, objective description of visible elements only"
-      },
-      keywords: { 
-        type: "string",
-        description: "49 keywords in English, comma-separated, ordered by relevance. NO subjective/promotional/marketing words."
+  async function callGroqAPI(base64Data){
+    const cleanBase64 = base64Data.split(',')[1];
+    const model = document.getElementById('model-select').value;
+    const url = "https://api.groq.com/openai/v1/chat/completions";
+    const messages = [
+      { role: "system", content: adobeStockSystemPrompt },
+      { role: "user", content: [ 
+          { type: "text", text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON only." }, 
+          { type: "image_url", image_url: { url: `data:image/jpeg;base64,${cleanBase64}` } } 
+        ] 
       }
-    },
-    required: ["title", "keywords"],
-    additionalProperties: false
-  };
-  
-  const payload = { 
-    model: model, 
-    messages: [systemMessage, userMessage], 
-    temperature: 0.0,  // <<< ZERO untuk output paling konsisten
-    max_tokens: 1024,
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "adobe_stock_metadata",
-        strict: true,  // <<< STRICT MODE - garansi 100% schema compliance
-        schema: schema
-      }
-    }
-  };
-  
-  const headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  headers.append('Authorization', `Bearer ${apiKey}`);
-  
-  let resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
-  
-  // Handle rate limit
-  if(resp.status === 429) throw new Error('429 Rate limit exceeded (Groq)');
-  if(!resp.ok){ 
-    let err = await resp.json(); 
-    throw new Error(err.error?.message || `HTTP ${resp.status}`); 
+    ];
+    const payload = { model, messages, temperature: 0.0, max_tokens: 1024, response_format: { type: "json_object" } };
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', `Bearer ${apiKey}`);
+    let resp = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
+    if(resp.status === 429) throw new Error('429 Rate limit exceeded (Groq)');
+    if(!resp.ok){ let err = await resp.json(); throw new Error(err.error?.message || `HTTP ${resp.status}`); }
+    let result = await resp.json();
+    let contentText = result.choices[0]?.message?.content;
+    if(!contentText) throw new Error("Empty response from Groq");
+    let parsed = JSON.parse(contentText);
+    let title = parsed.title || "";
+    let keywordsStr = parsed.keywords || "";
+    title = cleanTitle(title);
+    keywordsStr = cleanKeywords(keywordsStr);
+    return { title, keywords: keywordsStr };
   }
-  
-  let result = await resp.json();
-  let contentText = result.choices[0]?.message?.content;
-  if(!contentText) throw new Error("Empty response from Groq");
-  
-  let parsed = JSON.parse(contentText);
-  let title = parsed.title || "";
-  let keywordsStr = parsed.keywords || "";
-  
-  // Validasi tambahan setelah menerima response
-  let keywordsArray = keywordsStr.split(',').map(k=>k.trim()).filter(k=>k.length > 0);
-  
-  // Filter kata terlarang dari keywords (backup validation)
-  const forbiddenWords = [
-    'amazing', 'perfect', 'stunning', 'beautiful', 'incredible', 'wonderful', 
-    'awesome', 'fantastic', 'gorgeous', 'magnificent', 'spectacular', 'breathtaking',
-    'buy', 'sale', 'discount', 'exclusive', 'limited', 'promotional',
-    'revolutionary', 'groundbreaking', 'ultimate', 'best', 'top', 'premium', 'luxury',
-    'unbelievable', 'extraordinary', 'remarkable', 'outstanding', 'exceptional'
-  ];
-  
-  keywordsArray = keywordsArray.filter(k => {
-    const lowerKeyword = k.toLowerCase();
-    return !forbiddenWords.some(bad => lowerKeyword.includes(bad));
-  });
-  
-  // Jika jumlah keyword kurang dari 49, tambahkan filler yang aman
-  if(keywordsArray.length !== 49){
-    let safeFiller = ["stock","photography","commercial","studio","isolated","white background","copy space","concept","creative","art","design","digital","modern","simple","clean","professional","business","lifestyle","travel","nature","outdoor","indoor","people","portrait","landscape","urban","architecture","technology","fashion","food","health","fitness","education","finance","real estate","automotive","vintage","retro","abstract","pattern","texture","background","detail","close up","full frame","horizontal","vertical"];
-    while(keywordsArray.length < 49) keywordsArray.push(safeFiller[Math.floor(Math.random()*safeFiller.length)]);
-    if(keywordsArray.length > 49) keywordsArray = keywordsArray.slice(0,49);
-    keywordsStr = keywordsArray.join(',');
-  }
-  
-  // Validasi title: bersihkan dari kata terlarang
-  for (const bad of forbiddenWords) {
-    const regex = new RegExp(`\\b${bad}\\b`, 'gi');
-    title = title.replace(regex, '');
-  }
-  title = title.replace(/\s+/g, ' ').trim();
-  
-  // Validasi panjang title
-  if(title.length < 70) title = title + " high quality stock photo";
-  if(title.length > 120) title = title.substring(0,117)+"...";
-  
-  return { title, keywords: keywordsStr };
-}
 
   async function callProviderAPI(base64Data){
     if(currentProvider === 'gemini') return await callGeminiAPI(base64Data);
@@ -551,50 +551,34 @@ OUTPUT MUST BE VALID JSON with exactly two fields: "title" (string) and "keyword
   async function handleFiles(files){
     if(files.length===0) return;
     updateRobotStatus('PROCESSING',`Menerima ${files.length} berkas...`);
-    
     for(let file of files){
       if(!file.type.startsWith('image/')) continue;
-      
       let id = 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      
-      // KRUSIAL: Dapatkan nama file asli (khusus untuk Android Content URI)
-      let originalFileName = await getFileNameFromUri(file);
-      
-      console.log(`[DEBUG] Upload file: ${originalFileName} (ID: ${id})`);
-      console.log(`[DEBUG] File object name property: ${file.name}`);
-      
-      let fileObj = { 
-        id: id, 
-        originalName: originalFileName,
-        originalUri: file.name || id,
-        originalSize: (file.size / 1024).toFixed(1) + ' KB', 
-        compressedSize: 'kompresi...', 
-        base64: null, 
-        status: 'pending', 
-        title: '', 
-        keywords: '', 
-        error: '' 
-      };
+      let rawName = file.name;
+      let originalFileName = rawName;
+      let isAndroidNumeric = isNumericFilename(rawName);
+      if (isAndroidNumeric) {
+        let ext = '.jpg';
+        if (file.type.includes('png')) ext = '.png';
+        else if (file.type.includes('gif')) ext = '.gif';
+        else if (file.type.includes('webp')) ext = '.webp';
+        originalFileName = `android_image_${rawName}${ext}`;
+      }
+      let fileObj = { id, originalName: originalFileName, originalRawName: rawName, isNumericName: isAndroidNumeric, originalSize: (file.size/1024).toFixed(1)+' KB', compressedSize: 'kompresi...', base64: null, status: 'pending', title: '', keywords: '', error: '' };
       filesQueue.push(fileObj);
       renderQueue();
-      
       try{
         let res = await compressImage(file);
         let idx = filesQueue.findIndex(f => f.id === id);
         if(idx !== -1){ 
           filesQueue[idx].base64 = res.base64; 
           filesQueue[idx].compressedSize = res.sizeKb.toFixed(1) + ' KB';
-          console.log(`[DEBUG] Kompresi selesai untuk: ${filesQueue[idx].originalName}`);
           renderQueue(); 
           updateRobotStatus('IDLE', 'Kompresi selesai'); 
         }
       } catch(err){
         let idx = filesQueue.findIndex(f => f.id === id);
-        if(idx !== -1){ 
-          filesQueue[idx].status = 'failed'; 
-          filesQueue[idx].error = `Kompresi error: ${err.message}`; 
-          renderQueue(); 
-        }
+        if(idx !== -1){ filesQueue[idx].status = 'failed'; filesQueue[idx].error = `Kompresi error: ${err.message}`; renderQueue(); }
       }
     }
     checkStartBtn();
@@ -614,7 +598,11 @@ OUTPUT MUST BE VALID JSON with exactly two fields: "title" (string) and "keyword
       else if(item.status==='failed') statusBadge='<span style="background:#ff313120; border-color:#ff3131;"><i class="fa-solid fa-exclamation-triangle"></i> GAGAL</span>';
       else statusBadge='<span><i class="fa-regular fa-clock"></i> SIAP</span>';
       let preview=item.base64 || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23151e2e"/%3E%3C/svg%3E';
-      card.innerHTML=`<div class="thumbnail"><img src="${preview}" class="thumbnail-img" style="width:100%; aspect-ratio:1/1; object-fit:cover;"><div style="margin-top:4px; font-size:0.6rem;"><strong style="color:#00f0ff;">${escapeHtml(item.originalName)}</strong><br>${item.originalSize} → ${item.compressedSize}</div><div style="margin-top:6px;">${statusBadge}</div><button onclick="removeItem('${item.id}')" class="copy-btn" style="margin-top:6px; background:#ff313120; border-color:#ff3131; width:100%;"><i class="fa-solid fa-xmark"></i> Hapus</button></div>
+      let editButton = '';
+      if (item.isNumericName || item.originalName.startsWith('android_image_')) {
+        editButton = `<button class="edit-filename-btn" onclick="openFilenameEditor('${item.id}', '${escapeJs(item.originalName)}')"><i class="fa-solid fa-pen"></i> Edit Nama</button>`;
+      }
+      card.innerHTML=`<div class="thumbnail"><img src="${preview}" class="thumbnail-img" style="width:100%; aspect-ratio:1/1; object-fit:cover;"><div style="margin-top:4px; font-size:0.6rem;"><strong style="color:#00f0ff;">${escapeHtml(item.originalName)}</strong>${editButton}<br>${item.originalSize} → ${item.compressedSize}</div><div style="margin-top:6px;">${statusBadge}</div><button onclick="removeItem('${item.id}')" class="copy-btn" style="margin-top:6px; background:#ff313120; border-color:#ff3131; width:100%;"><i class="fa-solid fa-xmark"></i> Hapus</button></div>
       <div class="metadata-fields"><div class="field-row"><input type="text" value="${escapeHtml(item.title)}" placeholder="Judul akan digenerate..." onchange="updateItemData('${item.id}','title',this.value)"><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.title)}')"><i class="fa-regular fa-copy"></i> Salin</button></div>
       <div class="field-row"><textarea rows="3" placeholder="49 keyword dipisah koma..." onchange="updateItemData('${item.id}','keywords',this.value)">${escapeHtml(item.keywords)}</textarea><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.keywords)}')">Salin</button></div>${item.error?`<div style="background:#ff313120; border-left:3px solid #ff3131; padding:0.2rem; font-size:0.6rem;"><i class="fa-solid fa-bug"></i> ${escapeHtml(item.error)}</div>`:''}</div>`;
       listDiv.appendChild(card);
@@ -687,8 +675,8 @@ OUTPUT MUST BE VALID JSON with exactly two fields: "title" (string) and "keyword
       }
       renderQueue();
       if(i < pending.length-1){
-        updateRobotStatus('PROCESSING',`Menunggu 5 detik sebelum gambar berikutnya...`);
-        await new Promise(r=>setTimeout(r, 5000));
+        updateRobotStatus('PROCESSING',`Menunggu 10 detik sebelum gambar berikutnya...`);
+        await new Promise(r=>setTimeout(r, 10000));
       }
     }
     isProcessing = false;
@@ -724,46 +712,17 @@ OUTPUT MUST BE VALID JSON with exactly two fields: "title" (string) and "keyword
 
   function exportBatch(type) {
     let completed = filesQueue.filter(f => f.status === 'completed');
-    if (completed.length === 0) {
-      showToast('Ekspor Gagal', 'Tidak ada metadata selesai', 'ERROR');
-      return;
-    }
-    
-    console.log('[EXPORT] File yang akan diekspor:');
-    completed.forEach(item => {
-      console.log(`  - ${item.originalName} (Status: ${item.status})`);
-    });
-
+    if (completed.length === 0) { showToast('Ekspor Gagal', 'Tidak ada metadata selesai', 'ERROR'); return; }
     if (type === 'csv') {
       let rows = [['Filename', 'Title', 'Keywords']];
-      for (let item of completed) {
-        let fileName = item.originalName || 'unknown.jpg';
-        rows.push([fileName, item.title || '', item.keywords || '']);
-      }
+      for (let item of completed) { rows.push([item.originalName, item.title || '', item.keywords || '']); }
       let csvContent = rows.map(row => row.map(cell => escapeCSV(cell)).join(',')).join('\n');
       let blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
       download(blob, `metadata_${currentProvider}_${Date.now()}.csv`);
-      
-    } else if (type === 'xls') {
-      let html = `<?xml version="1.0" encoding="UTF-8"?>
-      <html>
-      <head><meta charset="UTF-8"><title>Metadata Stock v${APP_VERSION}</title></head>
-      <body>
-        <table border="1">
-          <thead><tr><th>Filename</th><th>Title</th><th>Keywords</th></tr></thead>
-          <tbody>`;
-      for (let item of completed) {
-        let fileName = item.originalName || 'unknown.jpg';
-        html += `<tr>
-          <td>${escapeHtml(fileName)}</td>
-          <td>${escapeHtml(item.title || '')}</td>
-          <td>${escapeHtml(item.keywords || '')}</td>
-        </tr>`;
-      }
-      html += `    </tbody>
-        </table>
-      </body>
-      </html>`;
+    } else {
+      let html = `<?xml version="1.0" encoding="UTF-8"?><html><head><meta charset="UTF-8"><title>Metadata Stock v${APP_VERSION}</title></head><body><table border="1"><thead><tr><th>Filename</th><th>Title</th><th>Keywords</th></tr></thead><tbody>`;
+      for (let item of completed) { html += `<tr><td>${escapeHtml(item.originalName)}</td><td>${escapeHtml(item.title)}</td><td>${escapeHtml(item.keywords)}</td></tr>`; }
+      html += `</tbody></table></body></html>`;
       let blob = new Blob(["\uFEFF" + html], { type: 'application/vnd.ms-excel' });
       download(blob, `metadata_${currentProvider}_${Date.now()}.xls`);
     }
@@ -789,7 +748,7 @@ OUTPUT MUST BE VALID JSON with exactly two fields: "title" (string) and "keyword
     loadStoredKey();
     setupDragDrop();
     checkStartBtn();
-    updateRobotStatus('IDLE', `Aplikasi siap v${APP_VERSION} - Mendukung Android Content URI (nama file akan diambil dari database media)`);
+    updateRobotStatus('IDLE', `Aplikasi siap v${APP_VERSION} - Title mengikuti struktur Adobe Stock (55-70 karakter, natural, SEO-friendly).`);
   };
 </script>
 </body>
