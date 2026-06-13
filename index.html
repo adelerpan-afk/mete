@@ -347,31 +347,27 @@
   ];
 
   function cleanTitle(title) {
-    if (!title) return '';
-    let cleaned = title;
-    // Hapus kata terlarang (case insensitive)
-    for (let word of forbiddenWords) {
-      const regex = new RegExp(`\\b${word.replace(/ /g, '\\s+')}\\b`, 'gi');
-      cleaned = cleaned.replace(regex, '');
-      const noSpace = word.replace(/\s+/g, '');
-      if (noSpace !== word) {
-        const regex2 = new RegExp(`\\b${noSpace}\\b`, 'gi');
-        cleaned = cleaned.replace(regex2, '');
-      }
+  if (!title) return '';
+  let cleaned = title;
+  // Hapus kata terlarang (case insensitive)
+  for (let word of forbiddenWords) {
+    const regex = new RegExp(`\\b${word.replace(/ /g, '\\s+')}\\b`, 'gi');
+    cleaned = cleaned.replace(regex, '');
+    const noSpace = word.replace(/\s+/g, '');
+    if (noSpace !== word) {
+      const regex2 = new RegExp(`\\b${noSpace}\\b`, 'gi');
+      cleaned = cleaned.replace(regex2, '');
     }
-    // Hapus kelebihan spasi
-    cleaned = cleaned.replace(/\s+/g, ' ').trim();
-    // Kapitalisasi huruf pertama
-    if (cleaned.length > 0) {
-      cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-    }
-    // Potong jika >70 karakter (target 55-70)
-    if (cleaned.length > 70) {
-      cleaned = cleaned.substring(0, 67) + '...';
-    }
-    // Jika terlalu pendek (<55) biarkan saja (jangan tambah apa-apa)
-    return cleaned;
   }
+  // Hapus kelebihan spasi
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  // Kapitalisasi huruf pertama
+  if (cleaned.length > 0) {
+    cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  }
+  // TIDAK ADA PEMOTONGAN - biarkan sesuai deskripsi gambar
+  return cleaned;
+}
 
   function cleanKeywords(keywordsStr) {
     if (!keywordsStr) return '';
@@ -675,8 +671,8 @@ Keywords: exactly 49 objective keywords, comma-separated, ordered by relevance.`
       }
       renderQueue();
       if(i < pending.length-1){
-        updateRobotStatus('PROCESSING',`Menunggu 10 detik sebelum gambar berikutnya...`);
-        await new Promise(r=>setTimeout(r, 10000));
+        updateRobotStatus('PROCESSING',`Menunggu 5 detik sebelum gambar berikutnya...`);
+        await new Promise(r=>setTimeout(r, 5000));
       }
     }
     isProcessing = false;
