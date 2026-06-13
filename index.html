@@ -586,8 +586,8 @@
       }
       renderQueue();
       if(i < pending.length-1){
-        updateRobotStatus('PROCESSING',`Menunggu 10 detik sebelum gambar berikutnya...`);
-        await new Promise(r=>setTimeout(r, 10000));
+        updateRobotStatus('PROCESSING',`Menunggu 5 detik sebelum gambar berikutnya...`);
+        await new Promise(r=>setTimeout(r, 5000));
       }
     }
     isProcessing = false;
