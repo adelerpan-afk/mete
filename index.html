@@ -374,36 +374,137 @@
     return { title, keywords: keywordsStr };
   }
 
-  async function callGroqAPI(base64Data){
-    const cleanBase64 = base64Data.split(',')[1];
-    const model = document.getElementById('model-select').value;
-    const url = "https://api.groq.com/openai/v1/chat/completions";
-    const systemMessage = { role: "system", content: `Anda adalah ahli metadata Adobe Stock. Hasilkan JSON: { "title": "string", "keywords": "string" } dengan aturan ketat: Title dalam bahasa Inggris, panjang 70-120 karakter, deskriptif, mengandung kata kunci utama, jangan gunakan kata yang tidak terlihat pada gambar. Keywords: tepat 49 keyword bahasa Inggris, urut dari paling penting ke kurang penting, pisahkan dengan koma, hindari duplikat. Gunakan kombinasi: objek utama, konsep, warna, suasana, aktivitas, industri, penggunaan komersial. Output hanya JSON valid.` };
-    const userMessage = { role: "user", content: [ { type: "text", text: "Buat metadata untuk gambar ini sesuai aturan Adobe Stock." }, { type: "image_url", image_url: { url: `data:image/jpeg;base64,${cleanBase64}` } } ] };
-    const payload = { model: model, messages: [systemMessage, userMessage], temperature: 0.3, response_format: { type: "json_object" }, max_tokens: 1024 };
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', `Bearer ${apiKey}`);
-    let resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
-    if(resp.status === 429) throw new Error('429 Rate limit exceeded (Groq)');
-    if(!resp.ok){ let err = await resp.json(); throw new Error(err.error?.message || `HTTP ${resp.status}`); }
-    let result = await resp.json();
-    let contentText = result.choices[0]?.message?.content;
-    if(!contentText) throw new Error("Respons kosong dari Groq");
-    let parsed = JSON.parse(contentText);
-    let title = parsed.title || "";
-    let keywordsStr = parsed.keywords || "";
-    let keywordsArray = keywordsStr.split(',').map(k=>k.trim()).filter(k=>k.length);
-    if(keywordsArray.length !== 49){
-      let filler = ["stock","photography","commercial","high quality","studio","isolated","white background","copy space","concept","creative","art","design","digital","beautiful","elegant","modern","simple","clean","professional","business","lifestyle","travel","nature","outdoor","indoor","people","portrait","landscape","urban","architecture","technology","fashion","food","health","fitness","education","finance","real estate","automotive","vintage","retro","abstract","pattern","texture","background","detail","close up","full frame","horizontal","vertical"];
-      while(keywordsArray.length < 49) keywordsArray.push(filler[Math.floor(Math.random()*filler.length)]);
-      if(keywordsArray.length > 49) keywordsArray = keywordsArray.slice(0,49);
-      keywordsStr = keywordsArray.join(',');
+  // ======================== GROQ API DENGAN STRICT SCHEMA (v7.4) ========================
+async function callGroqAPI(base64Data) {
+  const cleanBase64 = base64Data.split(',')[1];
+  const model = document.getElementById('model-select').value;
+  const url = "https://api.groq.com/openai/v1/chat/completions";
+  
+  // System prompt dengan larangan eksplisit untuk kata-kata yang tidak diinginkan
+  const systemMessage = { 
+    role: "system", 
+    content: `You are an OBJECTIVE Adobe Stock metadata specialist.
+
+STRICT RULES - VIOLATIONS WILL BE REJECTED:
+
+FOR TITLE (70-120 characters):
+1. Describe ONLY what is VISIBLE in the image
+2. Use NEUTRAL, FACTUAL language
+3. FORBIDDEN words (superlatives): amazing, perfect, stunning, beautiful, incredible, wonderful, awesome, fantastic, gorgeous, magnificent, spectacular, breathtaking, extraordinary
+4. FORBIDDEN words (promotional): buy, shop, sale, discount, exclusive, limited, offer, promotional, special, deal, bargain, cheap, free
+5. FORBIDDEN words (subjective): I think, probably, seems, appears to, might, could, possibly, likely, maybe, perhaps, seemingly
+6. FORBIDDEN words (marketing): revolutionary, groundbreaking, ultimate, best, top, premium, luxury, superior, unmatched, unbeatable
+7. FORBIDDEN: exclamation marks (!), ALL CAPS words, emojis
+
+FOR KEYWORDS (exactly 49 keywords, comma-separated, ordered from most to least relevant):
+1. Use only OBJECTIVE nouns and adjectives
+2. GOOD keywords: "mountain", "landscape", "blue sky", "tree", "forest", "water", "lake", "river", "sand", "beach", "ocean", "building", "city", "car", "person", "animal", "flower", "food", "product"
+3. FORBIDDEN keyword types: subjective adjectives ("beautiful", "stunning", "amazing"), promotional ("best", "top", "premium"), marketing ("exclusive", "limited")
+4. Each keyword must be a real word - no typos, no concatenated words
+5. No duplicate keywords
+
+OUTPUT MUST BE VALID JSON with exactly two fields: "title" (string) and "keywords" (string with 49 comma-separated keywords).`
+  };
+  
+  const userMessage = { 
+    role: "user", 
+    content: [ 
+      { type: "text", text: "Analyze this image and generate metadata according to the OBJECTIVE rules above. Output only valid JSON." }, 
+      { type: "image_url", image_url: { url: `data:image/jpeg;base64,${cleanBase64}` } } 
+    ] 
+  };
+  
+  // Schema untuk Structured Outputs - memastikan output sesuai format
+  const schema = {
+    type: "object",
+    properties: {
+      title: { 
+        type: "string",
+        description: "Title in English, 70-120 characters, objective description of visible elements only"
+      },
+      keywords: { 
+        type: "string",
+        description: "49 keywords in English, comma-separated, ordered by relevance. NO subjective/promotional/marketing words."
+      }
+    },
+    required: ["title", "keywords"],
+    additionalProperties: false
+  };
+  
+  const payload = { 
+    model: model, 
+    messages: [systemMessage, userMessage], 
+    temperature: 0.0,  // <<< ZERO untuk output paling konsisten
+    max_tokens: 1024,
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "adobe_stock_metadata",
+        strict: true,  // <<< STRICT MODE - garansi 100% schema compliance
+        schema: schema
+      }
     }
-    if(title.length < 70) title = title + " high quality stock photo";
-    if(title.length > 120) title = title.substring(0,117)+"...";
-    return { title, keywords: keywordsStr };
+  };
+  
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/json');
+  headers.append('Authorization', `Bearer ${apiKey}`);
+  
+  let resp = await fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload) });
+  
+  // Handle rate limit
+  if(resp.status === 429) throw new Error('429 Rate limit exceeded (Groq)');
+  if(!resp.ok){ 
+    let err = await resp.json(); 
+    throw new Error(err.error?.message || `HTTP ${resp.status}`); 
   }
+  
+  let result = await resp.json();
+  let contentText = result.choices[0]?.message?.content;
+  if(!contentText) throw new Error("Empty response from Groq");
+  
+  let parsed = JSON.parse(contentText);
+  let title = parsed.title || "";
+  let keywordsStr = parsed.keywords || "";
+  
+  // Validasi tambahan setelah menerima response
+  let keywordsArray = keywordsStr.split(',').map(k=>k.trim()).filter(k=>k.length > 0);
+  
+  // Filter kata terlarang dari keywords (backup validation)
+  const forbiddenWords = [
+    'amazing', 'perfect', 'stunning', 'beautiful', 'incredible', 'wonderful', 
+    'awesome', 'fantastic', 'gorgeous', 'magnificent', 'spectacular', 'breathtaking',
+    'buy', 'sale', 'discount', 'exclusive', 'limited', 'promotional',
+    'revolutionary', 'groundbreaking', 'ultimate', 'best', 'top', 'premium', 'luxury',
+    'unbelievable', 'extraordinary', 'remarkable', 'outstanding', 'exceptional'
+  ];
+  
+  keywordsArray = keywordsArray.filter(k => {
+    const lowerKeyword = k.toLowerCase();
+    return !forbiddenWords.some(bad => lowerKeyword.includes(bad));
+  });
+  
+  // Jika jumlah keyword kurang dari 49, tambahkan filler yang aman
+  if(keywordsArray.length !== 49){
+    let safeFiller = ["stock","photography","commercial","studio","isolated","white background","copy space","concept","creative","art","design","digital","modern","simple","clean","professional","business","lifestyle","travel","nature","outdoor","indoor","people","portrait","landscape","urban","architecture","technology","fashion","food","health","fitness","education","finance","real estate","automotive","vintage","retro","abstract","pattern","texture","background","detail","close up","full frame","horizontal","vertical"];
+    while(keywordsArray.length < 49) keywordsArray.push(safeFiller[Math.floor(Math.random()*safeFiller.length)]);
+    if(keywordsArray.length > 49) keywordsArray = keywordsArray.slice(0,49);
+    keywordsStr = keywordsArray.join(',');
+  }
+  
+  // Validasi title: bersihkan dari kata terlarang
+  for (const bad of forbiddenWords) {
+    const regex = new RegExp(`\\b${bad}\\b`, 'gi');
+    title = title.replace(regex, '');
+  }
+  title = title.replace(/\s+/g, ' ').trim();
+  
+  // Validasi panjang title
+  if(title.length < 70) title = title + " high quality stock photo";
+  if(title.length > 120) title = title.substring(0,117)+"...";
+  
+  return { title, keywords: keywordsStr };
+}
 
   async function callProviderAPI(base64Data){
     if(currentProvider === 'gemini') return await callGeminiAPI(base64Data);
