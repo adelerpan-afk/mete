@@ -1,13 +1,21 @@
+Berikut adalah kode lengkap **v7.7** dengan perubahan:
+
+- **Delay antar gambar menjadi 5 detik** (dari 10 detik)
+- **`cleanTitle` tidak memotong title jika >70 karakter** (biarkan sesuai deskripsi gambar)
+- **Groq AI: mengambil dari field `description`** (fallback ke `title` jika tidak ada)
+- **Gemini AI: tetap mengambil dari field `title`**
+
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Cyber Metadata · Adobe Stock AI · v7.6</title>
+  <title>Cyber Metadata · Adobe Stock AI · v7.7</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* (CSS sama seperti v7.5, tidak diubah untuk menghemat ruang - salin dari v7.5) */
+    /* ========== CSS (sama seperti v7.6, tidak diubah untuk menghemat ruang) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background-color: #080c14; font-family: 'Rajdhani', sans-serif; color: #e2e8f0; min-height: 100vh; position: relative; overflow-x: hidden; }
     body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.2) 50%); background-size: 100% 4px; pointer-events: none; z-index: 5; }
@@ -110,8 +118,8 @@
         <div class="robot-head"><div class="scanner-line"></div><svg id="robot-face-svg" class="robot-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg></div>
       </div>
       <div>
-        <h1>METADATA BOT <span class="version-badge">v7.6</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
-        <p style="font-family: monospace; font-size:0.85rem;">Adobe Stock Optimized · Llama 4 Vision</p>
+        <h1>METADATA BOT <span class="version-badge">v7.7</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
+        <p style="font-family: monospace; font-size:0.85rem;">Adobe Stock Optimized · Groq (description) / Gemini (title)</p>
         <div id="robot-bubble" class="robot-bubble">"Pilih provider & masukkan API key."</div>
       </div>
     </div>
@@ -123,7 +131,7 @@
       <div style="display: flex; justify-content: space-between;"><span style="font-family: monospace; font-size:0.7rem;"><i class="fa-solid fa-key"></i> <span id="api-key-label">GEMINI API KEY</span></span><span id="api-status-badge" class="badge badge-danger">UNCONFIGURED</span></div>
       <div class="input-group"><div class="input-wrapper"><input type="password" id="api-key" placeholder="AIzaSy... atau gsk_..."><button class="eye-btn" onclick="toggleApiKeyVisibility()"><i id="api-eye-icon" class="fa-regular fa-eye-slash"></i></button></div><button class="cyber-btn" onclick="saveApiKey()">SIMPAN</button></div>
       <div style="margin: 0.5rem 0;"><label style="font-size:0.65rem;">VERSI MODEL</label><select id="model-select" style="width:100%; background:#151e2e; border:1px solid #334155; border-radius:0.375rem; padding:0.3rem; color:white;"><option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option><option value="gemini-1.5-flash">Gemini 1.5 Flash</option><option value="gemini-1.5-pro">Gemini 1.5 Pro</option></select><div id="model-quota-info" style="margin-top:0.4rem; font-size:0.6rem; background:#0f172a; padding:0.25rem; border-radius:0.25rem;">Free: 250/hari · 10 RPM</div></div>
-      <div class="warning-note"><i class="fa-solid fa-chart-simple"></i> Title mengikuti struktur Adobe Stock (55-70 karakter, natural, SEO-friendly)</div>
+      <div class="warning-note"><i class="fa-solid fa-info-circle"></i> Groq: mengambil "description" | Gemini: mengambil "title" | Delay 5 detik</div>
     </div>
   </div>
   <div class="main-grid">
@@ -156,25 +164,20 @@
   let isProcessing = false;
   let pendingFilenameEditId = null;
 
-  const APP_VERSION = '7.6';
+  const APP_VERSION = '7.7';
   const CHANGELOG = `📋 CHANGELOG v${APP_VERSION}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.6 (2026-06-13) - ADOBE STOCK TITLE STRUCTURE
-  • ADDED: New system prompt based on Adobe Stock
-    title master structure (55-70 chars, natural,
-    SEO-friendly, buyer-oriented)
-  • IMPROVED: cleanTitle() no longer adds "stock photo"
-  • IMPROVED: Title length target 55-70 characters
-  • REMOVED: Automatic "stock photo" suffix
+🔧 v7.7 (2026-06-15)
+  • Groq: mengambil field "description" (fallback ke "title")
+  • Gemini: tetap mengambil field "title"
+  • Delay antar gambar: 10s → 5s
+  • cleanTitle: tidak memotong >70 karakter (biarkan sesuai deskripsi)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.5 (2026-06-13) - FILTER KATA TERLARANG
-  • Filter "high quality", "beautiful", dll.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.3 (2026-06-13) - SOLUSI NAMA FILE ANDROID
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚡ v6.0 (2026-06-10) - Dual provider + 49 keyword`;
+🔧 v7.6 - Adobe Stock title structure
+🔧 v7.5 - Filter kata terlarang
+🔧 v7.3 - Solusi nama file Android
+⚡ v6.0 - Dual provider + 49 keyword`;
 
   function showChangelog() {
     let panel = document.getElementById('changelogPanel');
@@ -336,38 +339,35 @@
     }catch(e){}
   }
 
-  // ======================== FUNGSI CLEAN TITLE & KEYWORDS (UPDATED) ========================
+  // ======================== FUNGSI CLEAN TITLE & KEYWORDS ========================
   const forbiddenWords = [
     'amazing', 'perfect', 'stunning', 'beautiful', 'incredible', 'wonderful',
     'awesome', 'fantastic', 'gorgeous', 'magnificent', 'spectacular', 'breathtaking',
     'extraordinary', 'remarkable', 'outstanding', 'exceptional', 'unbelievable',
     'high quality', 'best', 'top', 'premium', 'luxury', 'exclusive', 'limited',
-    'revolutionary', 'groundbreaking', 'ultimate', 'superior', 'unmatched', 'unbeatable',
-    // juga 'stock photo' jika ingin dihapus? kita biarkan saja dulu, tapi tidak wajib
+    'revolutionary', 'groundbreaking', 'ultimate', 'superior', 'unmatched', 'unbeatable'
   ];
 
+  // TIDAK MEMOTONG JIKA >70 KARAKTER
   function cleanTitle(title) {
-  if (!title) return '';
-  let cleaned = title;
-  // Hapus kata terlarang (case insensitive)
-  for (let word of forbiddenWords) {
-    const regex = new RegExp(`\\b${word.replace(/ /g, '\\s+')}\\b`, 'gi');
-    cleaned = cleaned.replace(regex, '');
-    const noSpace = word.replace(/\s+/g, '');
-    if (noSpace !== word) {
-      const regex2 = new RegExp(`\\b${noSpace}\\b`, 'gi');
-      cleaned = cleaned.replace(regex2, '');
+    if (!title) return '';
+    let cleaned = title;
+    for (let word of forbiddenWords) {
+      const regex = new RegExp(`\\b${word.replace(/ /g, '\\s+')}\\b`, 'gi');
+      cleaned = cleaned.replace(regex, '');
+      const noSpace = word.replace(/\s+/g, '');
+      if (noSpace !== word) {
+        const regex2 = new RegExp(`\\b${noSpace}\\b`, 'gi');
+        cleaned = cleaned.replace(regex2, '');
+      }
     }
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    if (cleaned.length > 0) {
+      cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    }
+    // TIDAK DIPOTONG - biarkan sesuai deskripsi gambar
+    return cleaned;
   }
-  // Hapus kelebihan spasi
-  cleaned = cleaned.replace(/\s+/g, ' ').trim();
-  // Kapitalisasi huruf pertama
-  if (cleaned.length > 0) {
-    cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-  }
-  // TIDAK ADA PEMOTONGAN - biarkan sesuai deskripsi gambar
-  return cleaned;
-}
 
   function cleanKeywords(keywordsStr) {
     if (!keywordsStr) return '';
@@ -392,8 +392,7 @@
     return keywordsArray.join(', ');
   }
 
-  // ======================== AI CALLS DENGAN SYSTEM PROMPT BARU (ADOBE STOCK STRUCTURE) ========================
-  // System prompt berdasarkan instruksi user
+  // ======================== SYSTEM PROMPT UNTUK KEDUA PROVIDER ========================
   const adobeStockSystemPrompt = `You are an expert Adobe Stock metadata specialist.
 
 ==================================================
@@ -409,54 +408,36 @@ Create titles that are:
 - safe from trademark/IP issues
 - not keyword-stuffed
 
-==================================================
+TITLE STRUCTURE: [MAIN SUBJECT] + [ACTION / EVENT / PURPOSE] + [LOCATION / CONTEXT / USE CASE] + [STYLE / VISUAL TYPE / MOOD]
 
-TITLE STRUCTURE
-
-[MAIN SUBJECT] + [ACTION / EVENT / PURPOSE] + [LOCATION / CONTEXT / USE CASE] + [STYLE / VISUAL TYPE / MOOD]
-
-==================================================
-
-UNIVERSAL TITLE FORMULA
-[Subject] + [Concept/Action] + [Context] + [Visual Style]
-
-==================================================
-
-ADOBE STOCK OPTIMIZED FORMULAS
-
-SHORT VERSION (55-70 chars):
-[Main Subject] + [Commercial Intent] + [Asset Type]
-
-MEDIUM VERSION:
-[Subject] + [Action/Event] + [Context] + [Style]
-
-==================================================
+UNIVERSAL FORMULA: [Subject] + [Concept/Action] + [Context] + [Visual Style]
 
 IMPORTANT RULES:
 ✅ Use natural wording
 ✅ Focus on clear subjects
 ✅ Think like a buyer
 ✅ Use commercial language (e.g., "poster", "background", "template")
-✅ Keep title between 55-70 characters
 ✅ Put main subject near the beginning
 ❌ NO subjective words: beautiful, amazing, stunning, perfect, incredible
 ❌ NO promotional terms: high quality, best, premium, exclusive
 ❌ NO marketing hype: revolutionary, groundbreaking
 ❌ NO trademark/brand names
 ❌ NO camera specifications
-❌ NO keyword stuffing
 
-OUTPUT MUST BE JSON: { "title": "string", "keywords": "string" }
+OUTPUT MUST BE JSON.
+- FOR GROQ: use field "description" for the title/text
+- FOR GEMINI: use field "title" for the title/text
 Keywords: exactly 49 objective keywords, comma-separated, ordered by relevance.`;
 
+  // ======================== GEMINI API (tetap ambil "title") ========================
   async function callGeminiAPI(base64Data){
     const cleanBase64 = base64Data.split(',')[1];
     const mime = base64Data.split(',')[0].split(':')[1].split(';')[0];
     const model = document.getElementById('model-select').value;
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     const payload = { 
-      contents: [{ parts: [{ text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON only." }, { inlineData: { mimeType: mime, data: cleanBase64 } }] }], 
-      systemInstruction: { parts: [{ text: adobeStockSystemPrompt }] }, 
+      contents: [{ parts: [{ text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON with 'title' and 'keywords'." }, { inlineData: { mimeType: mime, data: cleanBase64 } }] }], 
+      systemInstruction: { parts: [{ text: adobeStockSystemPrompt + "\nFor Gemini, use field 'title' for the descriptive text." }] }, 
       generationConfig: { responseMimeType: "application/json", temperature: 0.0 } 
     };
     let resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -472,14 +453,15 @@ Keywords: exactly 49 objective keywords, comma-separated, ordered by relevance.`
     return { title, keywords: keywordsStr };
   }
 
+  // ======================== GROQ API (ambil "description", fallback "title") ========================
   async function callGroqAPI(base64Data){
     const cleanBase64 = base64Data.split(',')[1];
     const model = document.getElementById('model-select').value;
     const url = "https://api.groq.com/openai/v1/chat/completions";
     const messages = [
-      { role: "system", content: adobeStockSystemPrompt },
+      { role: "system", content: adobeStockSystemPrompt + "\nFor Groq, use field 'description' for the descriptive text. Output JSON with 'description' and 'keywords'." },
       { role: "user", content: [ 
-          { type: "text", text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON only." }, 
+          { type: "text", text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON with 'description' and 'keywords'." }, 
           { type: "image_url", image_url: { url: `data:image/jpeg;base64,${cleanBase64}` } } 
         ] 
       }
@@ -495,7 +477,8 @@ Keywords: exactly 49 objective keywords, comma-separated, ordered by relevance.`
     let contentText = result.choices[0]?.message?.content;
     if(!contentText) throw new Error("Empty response from Groq");
     let parsed = JSON.parse(contentText);
-    let title = parsed.title || "";
+    // Groq: prioritaskan "description", fallback ke "title"
+    let title = parsed.description || parsed.title || "";
     let keywordsStr = parsed.keywords || "";
     title = cleanTitle(title);
     keywordsStr = cleanKeywords(keywordsStr);
@@ -672,7 +655,7 @@ Keywords: exactly 49 objective keywords, comma-separated, ordered by relevance.`
       renderQueue();
       if(i < pending.length-1){
         updateRobotStatus('PROCESSING',`Menunggu 5 detik sebelum gambar berikutnya...`);
-        await new Promise(r=>setTimeout(r, 5000));
+        await new Promise(r=>setTimeout(r, 5000)); // DELAY 5 DETIK
       }
     }
     isProcessing = false;
@@ -744,7 +727,7 @@ Keywords: exactly 49 objective keywords, comma-separated, ordered by relevance.`
     loadStoredKey();
     setupDragDrop();
     checkStartBtn();
-    updateRobotStatus('IDLE', `Aplikasi siap v${APP_VERSION} - Title mengikuti struktur Adobe Stock (55-70 karakter, natural, SEO-friendly).`);
+    updateRobotStatus('IDLE', `Aplikasi siap v${APP_VERSION} - Groq ambil description, Gemini ambil title, delay 5 detik.`);
   };
 </script>
 </body>
