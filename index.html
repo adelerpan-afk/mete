@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Cyber Metadata · Adobe Stock AI · v7.8</title>
+  <title>Cyber Metadata · Adobe Stock AI · v7.9</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ========== CSS (sama seperti v7.7, tambahan untuk history panel) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background-color: #080c14; font-family: 'Rajdhani', sans-serif; color: #e2e8f0; min-height: 100vh; position: relative; overflow-x: hidden; }
     body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.2) 50%); background-size: 100% 4px; pointer-events: none; z-index: 5; }
@@ -87,13 +86,16 @@
     .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100; display: flex; flex-direction: column; gap: 0.5rem; }
     .toast { background: rgba(8,12,20,0.96); border-left: 4px solid #00f0ff; backdrop-filter: blur(8px); border-radius: 0.5rem; padding: 0.8rem 1rem; width: 320px; display: flex; gap: 0.75rem; transform: translateY(0.5rem); opacity: 0; transition: all 0.2s ease; animation: fadeInUp 0.2s forwards; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(8,12,20,0.85); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: 0.2s; }
-    .filename-modal { background: #151e2e; border: 2px solid #00f0ff; border-radius: 1rem; padding: 1.5rem; max-width: 400px; width: 90%; }
+    .filename-modal, .preview-modal { background: #151e2e; border: 2px solid #00f0ff; border-radius: 1rem; padding: 1.5rem; max-width: 700px; width: 90%; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+    .preview-modal { max-width: 900px; }
+    .preview-content { overflow-y: auto; flex: 1; margin-bottom: 1rem; }
+    .preview-item { border-bottom: 1px solid #1e293b; padding: 0.75rem; font-size: 0.75rem; font-family: monospace; }
+    .preview-item strong { color: #00f0ff; }
     .filename-modal input { width: 100%; background: #080c14; border: 1px solid #334155; border-radius: 0.375rem; padding: 0.5rem; color: white; margin: 1rem 0; font-family: monospace; }
     .debug-panel { position: fixed; bottom: 10px; right: 10px; background: #080c14cc; border: 1px solid #ffaa00; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.6rem; font-family: monospace; color: #ffaa00; max-width: 300px; z-index: 99; backdrop-filter: blur(4px); cursor: pointer; }
     .changelog-panel { position: fixed; bottom: 20px; left: 20px; z-index: 99; background: rgba(8,12,20,0.95); border: 1px solid #00f0ff; border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.6rem; font-family: monospace; backdrop-filter: blur(8px); pointer-events: none; }
     .changelog-btn { background: none; border: 1px solid #00f0ff40; color: #00f0ff; padding: 0.2rem 0.6rem; border-radius: 0.25rem; font-size: 0.6rem; cursor: pointer; margin-left: 0.5rem; transition: all 0.2s; }
     .changelog-btn:hover { background: #00f0ff20; border-color: #00f0ff; }
-    /* History Panel */
     .history-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 700px; max-height: 80vh; background: #0f172a; border: 2px solid #00f0ff; border-radius: 1rem; z-index: 150; backdrop-filter: blur(8px); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 30px rgba(0,240,255,0.3); }
     .history-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #00f0ff; background: #080c14; }
     .history-content { overflow-y: auto; padding: 0.5rem; flex: 1; }
@@ -103,6 +105,9 @@
     .text-cyan { color: #00f0ff; }
     button:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
     .warning-note { background: #ffaa0010; border-left: 3px solid #ffaa00; padding: 0.3rem; font-size: 0.6rem; margin-top: 0.5rem; }
+    .custom-panel { margin-top: 1rem; padding: 0.75rem; background: #0f172a80; border-radius: 0.5rem; }
+    .custom-panel .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 640px) { .custom-panel .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -116,8 +121,8 @@
         <div class="robot-head"><div class="scanner-line"></div><svg id="robot-face-svg" class="robot-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg></div>
       </div>
       <div>
-        <h1>METADATA BOT <span class="version-badge">v7.8</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
-        <p style="font-family: monospace; font-size:0.85rem;">Adobe Stock Optimized · History Log (localStorage)</p>
+        <h1>METADATA BOT <span class="version-badge">v7.9</span> <button class="changelog-btn" onclick="showChangelog()"><i class="fa-solid fa-list"></i> Changelog</button></h1>
+        <p style="font-family: monospace; font-size:0.85rem;">Adobe Stock Optimized · Custom Override · Stop Process</p>
         <div id="robot-bubble" class="robot-bubble">"Pilih provider & masukkan API key."</div>
       </div>
     </div>
@@ -129,45 +134,59 @@
       <div style="display: flex; justify-content: space-between;"><span style="font-family: monospace; font-size:0.7rem;"><i class="fa-solid fa-key"></i> <span id="api-key-label">GEMINI API KEY</span></span><span id="api-status-badge" class="badge badge-danger">UNCONFIGURED</span></div>
       <div class="input-group"><div class="input-wrapper"><input type="password" id="api-key" placeholder="AIzaSy... atau gsk_..."><button class="eye-btn" onclick="toggleApiKeyVisibility()"><i id="api-eye-icon" class="fa-regular fa-eye-slash"></i></button></div><button class="cyber-btn" onclick="saveApiKey()">SIMPAN</button></div>
       <div style="margin: 0.5rem 0;"><label style="font-size:0.65rem;">VERSI MODEL</label><select id="model-select" style="width:100%; background:#151e2e; border:1px solid #334155; border-radius:0.375rem; padding:0.3rem; color:white;"><option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option><option value="gemini-1.5-flash">Gemini 1.5 Flash</option><option value="gemini-1.5-pro">Gemini 1.5 Pro</option></select><div id="model-quota-info" style="margin-top:0.4rem; font-size:0.6rem; background:#0f172a; padding:0.25rem; border-radius:0.25rem;">Free: 250/hari · 10 RPM</div></div>
-      <div class="warning-note"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat penggunaan tersimpan di browser (localStorage). Klik tombol History di samping.</div>
+      <div class="warning-note"><i class="fa-solid fa-sliders-h"></i> Atur custom title/keyword di panel bawah sebelum proses.</div>
     </div>
   </div>
   <div class="main-grid">
-    <div><div id="drop-zone" class="dropzone"><div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up fa-2x"></i></div><h3 style="font-family:Orbitron;">UNGGAH GAMBAR</h3><p style="font-size:0.8rem;">Seret atau klik</p><input type="file" id="file-input" multiple accept="image/*" style="display:none;"><div style="font-size:0.6rem; margin-top:1rem;">Kompresi ≤100KB</div></div>
-    <div class="stats-card"><h3 style="font-family:Orbitron;"><i class="fa-solid fa-microchip"></i> MONITOR</h3><div style="margin:1rem 0;"><div style="display:flex; justify-content:space-between;"><span>PROGRES BERHASIL:</span><span id="progress-text" class="text-cyan">0 / 0</span></div><div class="progress-bar-bg"><div id="progress-bar" class="progress-fill"></div></div></div>
-    <div class="stat-grid"><div class="stat-card"><div style="font-size:0.6rem;">TOTAL</div><div id="stat-total" style="font-family:Orbitron; font-size:1.2rem;">0</div></div><div class="stat-card"><div style="font-size:0.6rem;">BERHASIL</div><div id="stat-success" style="color:#39ff14; font-size:1.2rem;">0</div></div><div class="stat-card"><div style="font-size:0.6rem;">DIPROSES</div><div id="stat-processing" style="color:#ffaa00; font-size:1.2rem;">0</div></div><div class="stat-card"><div style="font-size:0.6rem;">GAGAL</div><div id="stat-failed" style="color:#ff3131; font-size:1.2rem;">0</div></div></div>
-    <div style="display:flex; gap:0.6rem;">
-      <button id="btn-start" onclick="startProcessing()" disabled class="action-btn btn-primary"><i class="fa-solid fa-play"></i> MULAI PROSES</button>
-      <button id="btn-clear" onclick="clearQueue()" class="action-btn btn-danger"><i class="fa-solid fa-trash-can"></i> BERSIHKAN</button>
-      <button onclick="toggleHistoryPanel()" class="cyber-btn" style="padding:0.6rem;"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+    <div>
+      <div id="drop-zone" class="dropzone"><div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up fa-2x"></i></div><h3 style="font-family:Orbitron;">UNGGAH GAMBAR</h3><p style="font-size:0.8rem;">Seret atau klik</p><input type="file" id="file-input" multiple accept="image/*" style="display:none;"><div style="font-size:0.6rem; margin-top:1rem;">Kompresi ≤100KB</div></div>
+      <div class="stats-card">
+        <h3 style="font-family:Orbitron;"><i class="fa-solid fa-microchip"></i> MONITOR</h3>
+        <div style="margin:1rem 0;"><div style="display:flex; justify-content:space-between;"><span>PROGRES BERHASIL:</span><span id="progress-text" class="text-cyan">0 / 0</span></div><div class="progress-bar-bg"><div id="progress-bar" class="progress-fill"></div></div></div>
+        <div class="stat-grid"><div class="stat-card"><div style="font-size:0.6rem;">TOTAL</div><div id="stat-total" style="font-family:Orbitron; font-size:1.2rem;">0</div></div><div class="stat-card"><div style="font-size:0.6rem;">BERHASIL</div><div id="stat-success" style="color:#39ff14; font-size:1.2rem;">0</div></div><div class="stat-card"><div style="font-size:0.6rem;">DIPROSES</div><div id="stat-processing" style="color:#ffaa00; font-size:1.2rem;">0</div></div><div class="stat-card"><div style="font-size:0.6rem;">GAGAL</div><div id="stat-failed" style="color:#ff3131; font-size:1.2rem;">0</div></div></div>
+        <div style="display:flex; gap:0.6rem;">
+          <button id="btn-start" onclick="startProcessing()" disabled class="action-btn btn-primary"><i class="fa-solid fa-play"></i> MULAI PROSES</button>
+          <button id="btn-clear" onclick="clearQueue()" class="action-btn btn-danger"><i class="fa-solid fa-trash-can"></i> BERSIHKAN</button>
+          <button onclick="toggleHistoryPanel()" class="cyber-btn" style="padding:0.6rem;"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+        </div>
+        <div id="export-section" style="margin-top:1rem; border-top:1px solid #1e293b; padding-top:1rem; display:none;"><div style="display:flex; gap:0.5rem;">
+          <button onclick="showPreviewBeforeExport()" class="cyber-btn" style="flex:1;"><i class="fa-solid fa-eye"></i> Preview</button>
+        </div></div>
+      </div>
+      <!-- Custom Metadata Override Panel -->
+      <div class="custom-panel">
+        <h3 class="font-orbitron text-sm mb-2"><i class="fa-solid fa-sliders-h"></i> Custom Metadata Override</h3>
+        <div class="grid">
+          <div>
+            <label class="text-[10px] font-mono">Title Prefix/Suffix</label>
+            <input type="text" id="custom-title-text" class="w-full bg-cyber-black border border-slate-700 rounded px-2 py-1 text-xs" placeholder="Misal: Premium, 4K, Bundle">
+            <select id="custom-title-position" class="w-full bg-cyber-black border border-slate-700 rounded px-2 py-1 text-xs mt-1">
+              <option value="prefix">Awal (Prefix)</option>
+              <option value="suffix">Akhir (Suffix)</option>
+              <option value="middle">Setelah kata pertama</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-mono">Custom Keywords (pisah koma)</label>
+            <input type="text" id="custom-keywords" class="w-full bg-cyber-black border border-slate-700 rounded px-2 py-1 text-xs" placeholder="misal: business, teamwork, office">
+            <p class="text-[9px] text-slate-500 mt-1">Akan ditambahkan ke keyword (total tetap 49)</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="export-section" style="margin-top:1rem; border-top:1px solid #1e293b; padding-top:1rem; display:none;"><div style="display:flex; gap:0.5rem;">
-      <button onclick="exportBatch('csv')" class="cyber-btn" style="flex:1;"><i class="fa-solid fa-file-csv"></i> CSV</button>
-      <button onclick="exportBatch('xls')" class="cyber-btn" style="flex:1;"><i class="fa-solid fa-file-excel"></i> XLS</button>
-    </div></div></div></div>
-    <div><div class="queue-header"><h2 style="font-family:Orbitron;"><i class="fa-solid fa-list-check"></i> ANTREAN</h2><span id="queue-count" class="queue-count-badge">0 GAMBAR</span></div>
-    <div id="empty-state" class="dropzone" style="height:auto; background:#0f172a50;"><i class="fa-solid fa-images fa-3x" style="color:#475569;"></i><p>TIDAK ADA GAMBAR</p><p style="font-size:0.7rem;">Unggah gambar di panel kiri.</p></div>
-    <div id="image-list" class="image-list" style="display:none;"></div></div>
+    <div>
+      <div class="queue-header"><h2 style="font-family:Orbitron;"><i class="fa-solid fa-list-check"></i> ANTREAN</h2><span id="queue-count" class="queue-count-badge">0 GAMBAR</span></div>
+      <div id="empty-state" class="dropzone" style="height:auto; background:#0f172a50;"><i class="fa-solid fa-images fa-3x" style="color:#475569;"></i><p>TIDAK ADA GAMBAR</p><p style="font-size:0.7rem;">Unggah gambar di panel kiri.</p></div>
+      <div id="image-list" class="image-list" style="display:none;"></div>
+    </div>
   </div>
 </div>
 <div id="toast-container" class="toast-container"></div>
 <div id="modal-container" class="modal-overlay"><div class="filename-modal"><h3 id="modal-title" style="color:#00f0ff;">Edit Nama File</h3><p id="modal-message" style="font-size:0.8rem;">Masukkan nama file yang benar (termasuk ekstensi .jpg/.png)</p><input type="text" id="edit-filename-input" placeholder="contoh: foto_saya.jpg"><div style="display:flex; gap:0.5rem; justify-content:flex-end;"><button onclick="saveFilenameEdit()" class="cyber-btn">Simpan</button><button onclick="closeModal()" class="cyber-btn" style="background:#ff313120; border-color:#ff3131;">Batal</button></div></div></div>
+<div id="preview-modal" class="modal-overlay"><div class="preview-modal"><h3 id="preview-title" style="color:#00f0ff;">Preview Metadata Sebelum Export</h3><div id="preview-content" class="preview-content"></div><div style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem;"><button onclick="exportFromPreview('csv')" class="cyber-btn"><i class="fa-solid fa-file-csv"></i> Export CSV</button><button onclick="exportFromPreview('xls')" class="cyber-btn"><i class="fa-solid fa-file-excel"></i> Export XLS</button><button onclick="closePreviewModal()" class="cyber-btn" style="background:#ff313120; border-color:#ff3131;">Batal</button></div></div></div>
 <div class="changelog-panel" id="changelogPanel" style="display:none;"></div>
 <div class="debug-panel" id="debugPanel" onclick="showDebugInfo()">🐞 DEBUG: Klik untuk lihat queue</div>
-
-<!-- HISTORY PANEL -->
-<div id="history-panel" class="history-panel hidden">
-  <div class="history-header">
-    <span><i class="fa-solid fa-clock-rotate-left"></i> RIWAYAT PENGGUNAAN</span>
-    <span id="history-count" class="badge" style="background:#00f0ff20;">0</span>
-    <button onclick="toggleHistoryPanel()" class="cyber-btn" style="padding:0.2rem 0.5rem;"><i class="fa-solid fa-times"></i></button>
-  </div>
-  <div id="history-content" class="history-content"></div>
-  <div class="history-footer">
-    <button onclick="exportHistoryToCSV()" class="cyber-btn" style="font-size:0.7rem;"><i class="fa-solid fa-download"></i> Ekspor CSV</button>
-    <button onclick="clearHistory()" class="cyber-btn" style="background:#ff313120; border-color:#ff3131; font-size:0.7rem;"><i class="fa-solid fa-trash"></i> Hapus Semua</button>
-  </div>
-</div>
+<div id="history-panel" class="history-panel hidden"><div class="history-header"><span><i class="fa-solid fa-clock-rotate-left"></i> RIWAYAT PENGGUNAAN</span><span id="history-count" class="badge" style="background:#00f0ff20;">0</span><button onclick="toggleHistoryPanel()" class="cyber-btn" style="padding:0.2rem 0.5rem;"><i class="fa-solid fa-times"></i></button></div><div id="history-content" class="history-content"></div><div class="history-footer"><button onclick="exportHistoryToCSV()" class="cyber-btn" style="font-size:0.7rem;"><i class="fa-solid fa-download"></i> Ekspor CSV</button><button onclick="clearHistory()" class="cyber-btn" style="background:#ff313120; border-color:#ff3131; font-size:0.7rem;"><i class="fa-solid fa-trash"></i> Hapus Semua</button></div></div>
 
 <script>
   // ======================== GLOBAL STATE ========================
@@ -177,20 +196,24 @@
   let isProcessing = false;
   let pendingFilenameEditId = null;
   let currentBatchStartTime = null;
+  let abortController = null; // Untuk stop proses
 
-  const APP_VERSION = '7.8';
+  const APP_VERSION = '7.9';
   const CHANGELOG = `📋 CHANGELOG v${APP_VERSION}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔧 v7.8 (2026-06-15)
-  • ADDED: History panel (localStorage)
-  • Mencatat: waktu, provider, jumlah gambar, berhasil/gagal, browser, IP (via ipify)
-  • Tombol History di header, bisa ekspor CSV & hapus riwayat
+🔧 v7.9 (2026-06-15)
+  • ADDED: Custom title prefix/suffix (posisi awal, tengah, akhir)
+  • ADDED: Custom keywords (otomatis ditambahkan ke 49 keyword)
+  • ADDED: Tombol MULAI berubah menjadi STOP saat proses berjalan
+  • ADDED: Preview sebelum export (list semua title & keyword)
+  • IMPROVED: AI diminta memasukkan minimal 3 keyword dari judul
+  • FIXED: Keyword tetap 49 setelah custom override
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔧 v7.8 - History panel (localStorage)
 🔧 v7.7 - Groq ambil description, Gemini title, delay 5 detik
 🔧 v7.6 - Adobe Stock title structure
 🔧 v7.5 - Filter kata terlarang
-🔧 v7.3 - Solusi nama file Android
 ⚡ v6.0 - Dual provider + 49 keyword`;
 
   // ======================== HISTORY FUNCTIONS ========================
@@ -199,11 +222,8 @@
       const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
       return data.ip;
-    } catch (e) {
-      return 'unavailable';
-    }
+    } catch (e) { return 'unavailable'; }
   }
-
   function saveHistoryItem(item) {
     let history = JSON.parse(localStorage.getItem('app_history') || '[]');
     history.unshift(item);
@@ -211,116 +231,128 @@
     localStorage.setItem('app_history', JSON.stringify(history));
     renderHistory();
   }
-
   function renderHistory() {
     const history = JSON.parse(localStorage.getItem('app_history') || '[]');
     const historyContent = document.getElementById('history-content');
     const historyCount = document.getElementById('history-count');
     if (historyCount) historyCount.innerText = history.length;
     if (!historyContent) return;
-    if (history.length === 0) {
-      historyContent.innerHTML = '<div class="text-slate-500 text-center p-4">Belum ada riwayat penggunaan</div>';
-      return;
-    }
-    historyContent.innerHTML = history.map(item => `
-      <div class="history-item" style="border-bottom:1px solid #1e293b; padding:0.75rem; font-size:0.7rem; font-family:monospace;">
-        <div><i class="fa-regular fa-calendar"></i> ${item.datetime} <span class="text-cyan">[${item.provider.toUpperCase()}]</span></div>
-        <div>📷 ${item.totalImages} gambar | ✅ ${item.successCount} berhasil | ❌ ${item.failCount} gagal</div>
-        <div>🌐 ${(item.userAgent || '').substring(0, 50)}${(item.userAgent || '').length > 50 ? '...' : ''}</div>
-        ${item.ip ? `<div>🖧 IP: ${item.ip}</div>` : ''}
-        ${item.duration ? `<div>⏱️ Durasi: ${item.duration} detik</div>` : ''}
-      </div>
-    `).join('');
+    if (history.length === 0) { historyContent.innerHTML = '<div class="text-slate-500 text-center p-4">Belum ada riwayat penggunaan</div>'; return; }
+    historyContent.innerHTML = history.map(item => `<div class="history-item" style="border-bottom:1px solid #1e293b; padding:0.75rem; font-size:0.7rem; font-family:monospace;"><div><i class="fa-regular fa-calendar"></i> ${item.datetime} <span class="text-cyan">[${item.provider.toUpperCase()}]</span></div><div>📷 ${item.totalImages} gambar | ✅ ${item.successCount} berhasil | ❌ ${item.failCount} gagal</div><div>🌐 ${(item.userAgent || '').substring(0, 50)}${(item.userAgent || '').length > 50 ? '...' : ''}</div>${item.ip ? `<div>🖧 IP: ${item.ip}</div>` : ''}${item.duration ? `<div>⏱️ Durasi: ${item.duration} detik</div>` : ''}</div>`).join('');
   }
-
   function toggleHistoryPanel() {
     const panel = document.getElementById('history-panel');
-    if (panel.classList.contains('hidden')) {
-      panel.classList.remove('hidden');
-      renderHistory();
-    } else {
-      panel.classList.add('hidden');
-    }
+    if (panel.classList.contains('hidden')) { panel.classList.remove('hidden'); renderHistory(); }
+    else { panel.classList.add('hidden'); }
   }
-
   function clearHistory() {
-    if (confirm('Hapus semua riwayat penggunaan?')) {
-      localStorage.removeItem('app_history');
-      renderHistory();
-      showToast('History', 'Semua riwayat dihapus', 'SUCCESS');
-    }
+    if (confirm('Hapus semua riwayat penggunaan?')) { localStorage.removeItem('app_history'); renderHistory(); showToast('History', 'Semua riwayat dihapus', 'SUCCESS'); }
   }
-
   function exportHistoryToCSV() {
     const history = JSON.parse(localStorage.getItem('app_history') || '[]');
-    if (history.length === 0) {
-      showToast('Ekspor', 'Tidak ada riwayat untuk diekspor', 'ERROR');
-      return;
-    }
+    if (history.length === 0) { showToast('Ekspor', 'Tidak ada riwayat', 'ERROR'); return; }
     const headers = ['Timestamp', 'Provider', 'Total Gambar', 'Berhasil', 'Gagal', 'User Agent', 'IP', 'Durasi (detik)'];
-    const rows = history.map(item => [
-      item.datetime,
-      item.provider,
-      item.totalImages,
-      item.successCount,
-      item.failCount,
-      item.userAgent,
-      item.ip || '',
-      item.duration || ''
-    ]);
+    const rows = history.map(item => [item.datetime, item.provider, item.totalImages, item.successCount, item.failCount, item.userAgent, item.ip || '', item.duration || '']);
     const csvContent = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.download = `history_${Date.now()}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    showToast('Ekspor', 'Riwayat berhasil diekspor ke CSV', 'SUCCESS');
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `history_${Date.now()}.csv`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(blob);
+    showToast('Ekspor', 'Riwayat diekspor ke CSV', 'SUCCESS');
   }
-
   async function saveBatchHistory(provider, total, success, fail) {
     const duration = currentBatchStartTime ? Math.round((Date.now() - currentBatchStartTime) / 1000) : 0;
     const ip = await getPublicIP();
-    const historyItem = {
-      id: Date.now(),
-      datetime: new Date().toLocaleString('id-ID'),
-      provider: provider,
-      totalImages: total,
-      successCount: success,
-      failCount: fail,
-      userAgent: navigator.userAgent,
-      ip: ip,
-      duration: duration
-    };
-    saveHistoryItem(historyItem);
+    saveHistoryItem({ id: Date.now(), datetime: new Date().toLocaleString('id-ID'), provider, totalImages: total, successCount: success, failCount: fail, userAgent: navigator.userAgent, ip, duration });
+  }
+  function startBatchTimer() { currentBatchStartTime = Date.now(); }
+
+  // ======================== CUSTOM OVERRIDE FUNCTIONS ========================
+  function applyCustomOverrides(title, keywordsArray) {
+    // 1. Modifikasi title
+    const customText = document.getElementById('custom-title-text').value.trim();
+    const position = document.getElementById('custom-title-position').value;
+    if (customText) {
+      if (position === 'prefix') title = customText + ' ' + title;
+      else if (position === 'suffix') title = title + ' ' + customText;
+      else if (position === 'middle') {
+        const words = title.split(' ');
+        if (words.length > 1) { words.splice(1, 0, customText); title = words.join(' '); }
+        else title = title + ' ' + customText;
+      }
+      title = title.replace(/\s+/g, ' ').trim();
+    }
+    // 2. Modifikasi keywords
+    const customKeywordsRaw = document.getElementById('custom-keywords').value.trim();
+    if (customKeywordsRaw) {
+      let customKeywords = customKeywordsRaw.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+      for (let ck of customKeywords) if (!keywordsArray.includes(ck)) keywordsArray.push(ck);
+      const safeFiller = ["stock","photography","commercial","studio","isolated","white background","copy space","concept","creative","art","design","digital","modern","simple","clean","professional","business","lifestyle","travel","nature","outdoor","indoor","people","portrait","landscape","urban","architecture","technology","fashion","food","health","fitness","education","finance","real estate","automotive","vintage","retro","abstract","pattern","texture","background","detail","close up","full frame","horizontal","vertical"];
+      while (keywordsArray.length < 49) keywordsArray.push(safeFiller[Math.floor(Math.random() * safeFiller.length)]);
+      if (keywordsArray.length > 49) keywordsArray = keywordsArray.slice(0, 49);
+    }
+    return { title, keywords: keywordsArray };
   }
 
-  function startBatchTimer() {
-    currentBatchStartTime = Date.now();
+  // ======================== STOP PROCESS ========================
+  function stopProcessing() {
+    if (abortController) {
+      abortController.abort();
+      abortController = null;
+    }
+    isProcessing = false;
+    disableControls(false);
+    updateRobotStatus('IDLE', 'Proses dihentikan oleh pengguna.');
+    const btn = document.getElementById('btn-start');
+    btn.innerHTML = '<i class="fa-solid fa-play"></i> MULAI PROSES';
+    btn.onclick = startProcessing;
+    btn.disabled = false;
+    // reset button style
+    btn.classList.remove('btn-danger');
+    btn.classList.add('btn-primary');
+    showToast('Info', 'Proses dibatalkan', 'WARNING');
   }
 
-  // ======================== FUNGSI LAINNYA (cleanTitle, API, dll) ========================
+  // ======================== PREVIEW SEBELUM EXPORT ========================
+  function showPreviewBeforeExport() {
+    const completed = filesQueue.filter(f => f.status === 'completed');
+    if (completed.length === 0) { showToast('Preview', 'Tidak ada metadata selesai', 'ERROR'); return; }
+    const previewDiv = document.getElementById('preview-content');
+    previewDiv.innerHTML = '';
+    completed.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'preview-item';
+      div.innerHTML = `<strong>${idx+1}. ${escapeHtml(item.originalName)}</strong><br>
+                       📝 Title: ${escapeHtml(item.title)}<br>
+                       🔑 Keywords: ${escapeHtml(item.keywords)}<br>`;
+      previewDiv.appendChild(div);
+    });
+    document.getElementById('preview-modal').style.opacity = '1';
+    document.getElementById('preview-modal').style.pointerEvents = 'auto';
+  }
+  function closePreviewModal() {
+    document.getElementById('preview-modal').style.opacity = '0';
+    document.getElementById('preview-modal').style.pointerEvents = 'none';
+  }
+  let pendingExportType = null;
+  function exportFromPreview(type) {
+    pendingExportType = type;
+    closePreviewModal();
+    exportBatch(type);
+  }
+
+  // ======================== UTILITIES ========================
   function showChangelog() {
     let panel = document.getElementById('changelogPanel');
     panel.innerHTML = `<pre style="color:#00f0ff; font-family:monospace; font-size:0.65rem; white-space:pre-wrap;">${CHANGELOG}</pre>`;
     panel.style.display = 'block';
-    setTimeout(() => { panel.style.opacity = '1'; }, 10);
-    setTimeout(() => {
-      panel.style.opacity = '0';
-      setTimeout(() => panel.style.display = 'none', 500);
-    }, 8000);
+    setTimeout(() => panel.style.opacity = '1', 10);
+    setTimeout(() => { panel.style.opacity = '0'; setTimeout(() => panel.style.display = 'none', 500); }, 8000);
   }
-
   function showDebugInfo() {
     if (filesQueue.length === 0) { showToast('Debug', 'Queue kosong', 'INFO'); return; }
     let info = '📋 ISI QUEUE:\n';
     filesQueue.forEach((item, idx) => { info += `${idx+1}. NAMA: ${item.originalName}\n   STATUS: ${item.status}\n`; });
     alert(info);
   }
-
   function openFilenameEditor(id, currentName) {
     pendingFilenameEditId = id;
     document.getElementById('edit-filename-input').value = currentName;
@@ -330,29 +362,16 @@
     modal.style.opacity = '1';
     modal.style.pointerEvents = 'auto';
   }
-
   function saveFilenameEdit() {
     let newName = document.getElementById('edit-filename-input').value.trim();
     if (!newName) { showToast('Error', 'Nama file tidak boleh kosong', 'ERROR'); return; }
     let idx = filesQueue.findIndex(f => f.id === pendingFilenameEditId);
-    if (idx !== -1) {
-      filesQueue[idx].originalName = newName;
-      renderQueue();
-      showToast('Berhasil', `Nama file diubah menjadi ${newName}`, 'SUCCESS');
-    }
+    if (idx !== -1) { filesQueue[idx].originalName = newName; renderQueue(); showToast('Berhasil', `Nama file diubah menjadi ${newName}`, 'SUCCESS'); }
     closeModal();
     pendingFilenameEditId = null;
   }
-
-  function sanitizeApiKey(key) {
-    if (!key) return '';
-    let cleaned = key.trim();
-    cleaned = cleaned.replace(/[^\x20-\x7E]/g, '');
-    return cleaned;
-  }
-
+  function sanitizeApiKey(key) { if (!key) return ''; let cleaned = key.trim(); cleaned = cleaned.replace(/[^\x20-\x7E]/g, ''); return cleaned; }
   function isNumericFilename(filename) { return /^\d+$/.test(filename); }
-
   function showToast(title, msg, type='INFO'){
     let c = document.getElementById('toast-container');
     let t = document.createElement('div'); t.className = 'toast';
@@ -366,51 +385,18 @@
     setTimeout(()=>{ t.style.opacity='1'; t.style.transform='translateY(0)'; }, 20);
     setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 4000);
   }
-
-  function openModal(t,m){ 
-    document.getElementById('modal-title').innerText=t; 
-    document.getElementById('modal-message').innerHTML=m; 
-    let modal=document.getElementById('modal-container'); 
-    modal.style.opacity='1'; modal.style.pointerEvents='auto'; 
-  }
-  function closeModal(){ 
-    let m=document.getElementById('modal-container'); 
-    m.style.opacity='0'; m.style.pointerEvents='none'; 
-    pendingFilenameEditId = null;
-  }
-
+  function openModal(t,m){ document.getElementById('modal-title').innerText=t; document.getElementById('modal-message').innerHTML=m; let modal=document.getElementById('modal-container'); modal.style.opacity='1'; modal.style.pointerEvents='auto'; }
+  function closeModal(){ let m=document.getElementById('modal-container'); m.style.opacity='0'; m.style.pointerEvents='none'; pendingFilenameEditId = null; }
   function updateRobotStatus(state, speech=''){
-    let bubble = document.getElementById('robot-bubble'); 
-    if(speech) bubble.innerText = `"${speech}"`;
-    let svg = document.getElementById('robot-face-svg'); 
-    let ring = document.getElementById('robotRingStatus');
-    if(state==='PROCESSING'){ 
-      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'; 
-      svg.style.color='#ffaa00'; ring.style.animation = 'none';
-    } else if(state==='SUCCESS'){ 
-      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'; 
-      svg.style.color='#39ff14'; ring.style.animation = 'pulse-green 3s infinite';
-    } else if(state==='ERROR'){ 
-      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />'; 
-      svg.style.color='#ff3131'; ring.style.animation = 'pulse-red 2s infinite';
-    } else { 
-      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />'; 
-      svg.style.color='#00f0ff'; ring.style.animation = 'pulse-cyan 3s infinite'; 
-    }
+    let bubble = document.getElementById('robot-bubble'); if(speech) bubble.innerText = `"${speech}"`;
+    let svg = document.getElementById('robot-face-svg'); let ring = document.getElementById('robotRingStatus');
+    if(state==='PROCESSING'){ svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'; svg.style.color='#ffaa00'; ring.style.animation = 'none';
+    } else if(state==='SUCCESS'){ svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'; svg.style.color='#39ff14'; ring.style.animation = 'pulse-green 3s infinite';
+    } else if(state==='ERROR'){ svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />'; svg.style.color='#ff3131'; ring.style.animation = 'pulse-red 2s infinite';
+    } else { svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />'; svg.style.color='#00f0ff'; ring.style.animation = 'pulse-cyan 3s infinite'; }
   }
-
-  function updateApiStatus(ok){ 
-    let badge=document.getElementById('api-status-badge'); 
-    if(ok){ badge.innerText='ONLINE'; badge.className='badge badge-success'; } 
-    else { badge.innerText='UNCONFIGURED'; badge.className='badge badge-danger'; } 
-  }
-  function toggleApiKeyVisibility(){ 
-    let inp=document.getElementById('api-key'); 
-    let eye=document.getElementById('api-eye-icon'); 
-    if(inp.type==='password'){ inp.type='text'; eye.className='fa-regular fa-eye'; } 
-    else { inp.type='password'; eye.className='fa-regular fa-eye-slash'; } 
-  }
-
+  function updateApiStatus(ok){ let badge=document.getElementById('api-status-badge'); if(ok){ badge.innerText='ONLINE'; badge.className='badge badge-success'; } else { badge.innerText='UNCONFIGURED'; badge.className='badge badge-danger'; } }
+  function toggleApiKeyVisibility(){ let inp=document.getElementById('api-key'); let eye=document.getElementById('api-eye-icon'); if(inp.type==='password'){ inp.type='text'; eye.className='fa-regular fa-eye'; } else { inp.type='password'; eye.className='fa-regular fa-eye-slash'; } }
   function updateProviderUI(){
     let radios = document.getElementsByName('provider');
     for(let r of radios){ if(r.checked) currentProvider = r.value; }
@@ -430,15 +416,11 @@
     document.getElementById('api-key').value = '';
     apiKey = '';
   }
-
   function saveApiKey(){
     let key = document.getElementById('api-key').value.trim();
     if(!key){ showToast('Error','API Key kosong','ERROR'); return; }
     let sanitized = sanitizeApiKey(key);
-    if(sanitized !== key){
-      showToast('Peringatan','API Key mengandung karakter tidak valid, telah dibersihkan.','ERROR');
-      document.getElementById('api-key').value = sanitized;
-    }
+    if(sanitized !== key){ showToast('Peringatan','API Key mengandung karakter tidak valid, telah dibersihkan.','ERROR'); document.getElementById('api-key').value = sanitized; }
     apiKey = sanitized;
     if(!apiKey){ showToast('Error','API Key tidak valid','ERROR'); return; }
     try{ localStorage.setItem(`${currentProvider}_api_key`, apiKey); } catch(e){}
@@ -446,31 +428,15 @@
     updateRobotStatus('SUCCESS',`${currentProvider.toUpperCase()} API Key tersimpan.`);
     checkStartBtn();
   }
-
   function loadStoredKey(){
     try{
       let stored = localStorage.getItem(`${currentProvider}_api_key`);
-      if(stored){ 
-        let sanitized = sanitizeApiKey(stored);
-        apiKey = sanitized; 
-        document.getElementById('api-key').value = sanitized; 
-        updateApiStatus(true); 
-      } else { 
-        apiKey = ''; 
-        document.getElementById('api-key').value = ''; 
-        updateApiStatus(false); 
-      }
+      if(stored){ let sanitized = sanitizeApiKey(stored); apiKey = sanitized; document.getElementById('api-key').value = sanitized; updateApiStatus(true); }
+      else { apiKey = ''; document.getElementById('api-key').value = ''; updateApiStatus(false); }
     }catch(e){}
   }
 
-  const forbiddenWords = [
-    'amazing', 'perfect', 'stunning', 'beautiful', 'incredible', 'wonderful',
-    'awesome', 'fantastic', 'gorgeous', 'magnificent', 'spectacular', 'breathtaking',
-    'extraordinary', 'remarkable', 'outstanding', 'exceptional', 'unbelievable',
-    'high quality', 'best', 'top', 'premium', 'luxury', 'exclusive', 'limited',
-    'revolutionary', 'groundbreaking', 'ultimate', 'superior', 'unmatched', 'unbeatable'
-  ];
-
+  const forbiddenWords = ['amazing','perfect','stunning','beautiful','incredible','wonderful','awesome','fantastic','gorgeous','magnificent','spectacular','breathtaking','extraordinary','remarkable','outstanding','exceptional','unbelievable','high quality','best','top','premium','luxury','exclusive','limited','revolutionary','groundbreaking','ultimate','superior','unmatched','unbeatable'];
   function cleanTitle(title) {
     if (!title) return '';
     let cleaned = title;
@@ -478,54 +444,34 @@
       const regex = new RegExp(`\\b${word.replace(/ /g, '\\s+')}\\b`, 'gi');
       cleaned = cleaned.replace(regex, '');
       const noSpace = word.replace(/\s+/g, '');
-      if (noSpace !== word) {
-        const regex2 = new RegExp(`\\b${noSpace}\\b`, 'gi');
-        cleaned = cleaned.replace(regex2, '');
-      }
+      if (noSpace !== word) { const regex2 = new RegExp(`\\b${noSpace}\\b`, 'gi'); cleaned = cleaned.replace(regex2, ''); }
     }
     cleaned = cleaned.replace(/\s+/g, ' ').trim();
-    if (cleaned.length > 0) {
-      cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-    }
+    if (cleaned.length > 0) cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
     return cleaned;
   }
-
   function cleanKeywords(keywordsStr) {
     if (!keywordsStr) return '';
     let keywordsArray = keywordsStr.split(',').map(k => k.trim().toLowerCase()).filter(k => k.length > 0);
-    const forbiddenKeywords = [
-      'amazing', 'perfect', 'stunning', 'beautiful', 'incredible', 'wonderful',
-      'awesome', 'fantastic', 'gorgeous', 'magnificent', 'spectacular', 'breathtaking',
-      'high quality', 'best', 'top', 'premium', 'luxury', 'exclusive', 'limited',
-      'revolutionary', 'groundbreaking', 'ultimate', 'superior'
-    ];
-    keywordsArray = keywordsArray.filter(k => {
-      for (let bad of forbiddenKeywords) {
-        if (k.includes(bad)) return false;
-      }
-      return true;
-    });
+    const forbiddenKeywords = ['amazing','perfect','stunning','beautiful','incredible','wonderful','awesome','fantastic','gorgeous','magnificent','spectacular','breathtaking','high quality','best','top','premium','luxury','exclusive','limited','revolutionary','groundbreaking','ultimate','superior'];
+    keywordsArray = keywordsArray.filter(k => { for (let bad of forbiddenKeywords) if (k.includes(bad)) return false; return true; });
     const safeFiller = ["stock","photography","commercial","studio","isolated","white background","copy space","concept","creative","art","design","digital","modern","simple","clean","professional","business","lifestyle","travel","nature","outdoor","indoor","people","portrait","landscape","urban","architecture","technology","fashion","food","health","fitness","education","finance","real estate","automotive","vintage","retro","abstract","pattern","texture","background","detail","close up","full frame","horizontal","vertical"];
-    while (keywordsArray.length < 49) {
-      keywordsArray.push(safeFiller[Math.floor(Math.random() * safeFiller.length)]);
-    }
+    while (keywordsArray.length < 49) keywordsArray.push(safeFiller[Math.floor(Math.random() * safeFiller.length)]);
     if (keywordsArray.length > 49) keywordsArray = keywordsArray.slice(0, 49);
-    return keywordsArray.join(', ');
+    return keywordsArray;
   }
 
-  const adobeStockSystemPrompt = `You are an expert Adobe Stock metadata specialist. ... (sama seperti v7.7) ...`; // (disingkat untuk ruang, gunakan dari v7.7)
+  const adobeStockSystemPrompt = `You are an expert Adobe Stock metadata specialist.
+IMPORTANT: The title must be natural, SEO-friendly, buyer-oriented. You MUST include at least 3 important keywords from the title into the keyword list (as separate keywords). Do NOT use subjective, promotional, or marketing words.
+Output JSON: For Gemini use field "title", for Groq use "description". Also always include "keywords" field with exactly 49 comma-separated keywords.
+Rules: Title 55-70 characters (flexible), describe visible objects only. Keywords objective, ordered by relevance.`;
 
-  // ======================== API CALLS ========================
   async function callGeminiAPI(base64Data){
     const cleanBase64 = base64Data.split(',')[1];
     const mime = base64Data.split(',')[0].split(':')[1].split(';')[0];
     const model = document.getElementById('model-select').value;
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    const payload = { 
-      contents: [{ parts: [{ text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON with 'title' and 'keywords'." }, { inlineData: { mimeType: mime, data: cleanBase64 } }] }], 
-      systemInstruction: { parts: [{ text: adobeStockSystemPrompt + "\nFor Gemini, use field 'title' for the descriptive text." }] }, 
-      generationConfig: { responseMimeType: "application/json", temperature: 0.0 } 
-    };
+    const payload = { contents: [{ parts: [{ text: "Analyze image, generate metadata with title and 49 keywords. Include at least 3 keywords from the title into the keyword list." }, { inlineData: { mimeType: mime, data: cleanBase64 } }] }], systemInstruction: { parts: [{ text: adobeStockSystemPrompt }] }, generationConfig: { responseMimeType: "application/json", temperature: 0.0 } };
     let resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if(resp.status === 429) throw new Error('429 Rate limit exceeded');
     if(!resp.ok){ let err = await resp.json(); throw new Error(err.error?.message || `HTTP ${resp.status}`); }
@@ -535,7 +481,11 @@
     let title = parsed.title || "";
     let keywordsStr = parsed.keywords || "";
     title = cleanTitle(title);
-    keywordsStr = cleanKeywords(keywordsStr);
+    let keywordsArray = cleanKeywords(keywordsStr);
+    // Apply custom overrides
+    const overridden = applyCustomOverrides(title, keywordsArray);
+    title = overridden.title;
+    keywordsStr = overridden.keywords.join(', ');
     return { title, keywords: keywordsStr };
   }
 
@@ -544,17 +494,11 @@
     const model = document.getElementById('model-select').value;
     const url = "https://api.groq.com/openai/v1/chat/completions";
     const messages = [
-      { role: "system", content: adobeStockSystemPrompt + "\nFor Groq, use field 'description' for the descriptive text. Output JSON with 'description' and 'keywords'." },
-      { role: "user", content: [ 
-          { type: "text", text: "Analyze this image and generate metadata following the Adobe Stock rules. Output JSON with 'description' and 'keywords'." }, 
-          { type: "image_url", image_url: { url: `data:image/jpeg;base64,${cleanBase64}` } } 
-        ] 
-      }
+      { role: "system", content: adobeStockSystemPrompt + " For Groq use field 'description' for title." },
+      { role: "user", content: [ { type: "text", text: "Analyze image, output JSON with 'description' and 'keywords' (49 keywords). Include at least 3 keywords from description into keywords." }, { type: "image_url", image_url: { url: `data:image/jpeg;base64,${cleanBase64}` } } ] }
     ];
     const payload = { model, messages, temperature: 0.0, max_tokens: 1024, response_format: { type: "json_object" } };
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', `Bearer ${apiKey}`);
+    const headers = new Headers(); headers.append('Content-Type', 'application/json'); headers.append('Authorization', `Bearer ${apiKey}`);
     let resp = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
     if(resp.status === 429) throw new Error('429 Rate limit exceeded (Groq)');
     if(!resp.ok){ let err = await resp.json(); throw new Error(err.error?.message || `HTTP ${resp.status}`); }
@@ -565,7 +509,10 @@
     let title = parsed.description || parsed.title || "";
     let keywordsStr = parsed.keywords || "";
     title = cleanTitle(title);
-    keywordsStr = cleanKeywords(keywordsStr);
+    let keywordsArray = cleanKeywords(keywordsStr);
+    const overridden = applyCustomOverrides(title, keywordsArray);
+    title = overridden.title;
+    keywordsStr = overridden.keywords.join(', ');
     return { title, keywords: keywordsStr };
   }
 
@@ -583,7 +530,6 @@
     zone.addEventListener('drop',e=>{ e.preventDefault(); zone.style.borderColor=''; zone.style.background=''; handleFiles(e.dataTransfer.files); });
     inp.addEventListener('change',e=>handleFiles(e.target.files));
   }
-
   async function compressImage(file){
     return new Promise((resolve,reject)=>{
       let reader=new FileReader();
@@ -610,7 +556,6 @@
       reader.onerror=()=>reject(new Error('Gagal membaca file'));
     });
   }
-
   async function handleFiles(files){
     if(files.length===0) return;
     updateRobotStatus('PROCESSING',`Menerima ${files.length} berkas...`);
@@ -620,29 +565,15 @@
       let rawName = file.name;
       let originalFileName = rawName;
       let isAndroidNumeric = isNumericFilename(rawName);
-      if (isAndroidNumeric) {
-        let ext = '.jpg';
-        if (file.type.includes('png')) ext = '.png';
-        else if (file.type.includes('gif')) ext = '.gif';
-        else if (file.type.includes('webp')) ext = '.webp';
-        originalFileName = `android_image_${rawName}${ext}`;
-      }
+      if (isAndroidNumeric) { let ext = '.jpg'; if (file.type.includes('png')) ext = '.png'; else if (file.type.includes('gif')) ext = '.gif'; else if (file.type.includes('webp')) ext = '.webp'; originalFileName = `android_image_${rawName}${ext}`; }
       let fileObj = { id, originalName: originalFileName, originalRawName: rawName, isNumericName: isAndroidNumeric, originalSize: (file.size/1024).toFixed(1)+' KB', compressedSize: 'kompresi...', base64: null, status: 'pending', title: '', keywords: '', error: '' };
       filesQueue.push(fileObj);
       renderQueue();
       try{
         let res = await compressImage(file);
         let idx = filesQueue.findIndex(f => f.id === id);
-        if(idx !== -1){ 
-          filesQueue[idx].base64 = res.base64; 
-          filesQueue[idx].compressedSize = res.sizeKb.toFixed(1) + ' KB';
-          renderQueue(); 
-          updateRobotStatus('IDLE', 'Kompresi selesai'); 
-        }
-      } catch(err){
-        let idx = filesQueue.findIndex(f => f.id === id);
-        if(idx !== -1){ filesQueue[idx].status = 'failed'; filesQueue[idx].error = `Kompresi error: ${err.message}`; renderQueue(); }
-      }
+        if(idx !== -1){ filesQueue[idx].base64 = res.base64; filesQueue[idx].compressedSize = res.sizeKb.toFixed(1) + ' KB'; renderQueue(); updateRobotStatus('IDLE', 'Kompresi selesai'); }
+      } catch(err){ let idx = filesQueue.findIndex(f => f.id === id); if(idx !== -1){ filesQueue[idx].status = 'failed'; filesQueue[idx].error = `Kompresi error: ${err.message}`; renderQueue(); } }
     }
     checkStartBtn();
   }
@@ -661,10 +592,7 @@
       else if(item.status==='failed') statusBadge='<span style="background:#ff313120; border-color:#ff3131;"><i class="fa-solid fa-exclamation-triangle"></i> GAGAL</span>';
       else statusBadge='<span><i class="fa-regular fa-clock"></i> SIAP</span>';
       let preview=item.base64 || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23151e2e"/%3E%3C/svg%3E';
-      let editButton = '';
-      if (item.isNumericName || item.originalName.startsWith('android_image_')) {
-        editButton = `<button class="edit-filename-btn" onclick="openFilenameEditor('${item.id}', '${escapeJs(item.originalName)}')"><i class="fa-solid fa-pen"></i> Edit Nama</button>`;
-      }
+      let editButton = (item.isNumericName || item.originalName.startsWith('android_image_')) ? `<button class="edit-filename-btn" onclick="openFilenameEditor('${item.id}', '${escapeJs(item.originalName)}')"><i class="fa-solid fa-pen"></i> Edit Nama</button>` : '';
       card.innerHTML=`<div class="thumbnail"><img src="${preview}" class="thumbnail-img" style="width:100%; aspect-ratio:1/1; object-fit:cover;"><div style="margin-top:4px; font-size:0.6rem;"><strong style="color:#00f0ff;">${escapeHtml(item.originalName)}</strong>${editButton}<br>${item.originalSize} → ${item.compressedSize}</div><div style="margin-top:6px;">${statusBadge}</div><button onclick="removeItem('${item.id}')" class="copy-btn" style="margin-top:6px; background:#ff313120; border-color:#ff3131; width:100%;"><i class="fa-solid fa-xmark"></i> Hapus</button></div>
       <div class="metadata-fields"><div class="field-row"><input type="text" value="${escapeHtml(item.title)}" placeholder="Judul akan digenerate..." onchange="updateItemData('${item.id}','title',this.value)"><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.title)}')"><i class="fa-regular fa-copy"></i> Salin</button></div>
       <div class="field-row"><textarea rows="3" placeholder="49 keyword dipisah koma..." onchange="updateItemData('${item.id}','keywords',this.value)">${escapeHtml(item.keywords)}</textarea><button class="copy-btn" onclick="copyData(this,'${escapeJs(item.keywords)}')">Salin</button></div>${item.error?`<div style="background:#ff313120; border-left:3px solid #ff3131; padding:0.2rem; font-size:0.6rem;"><i class="fa-solid fa-bug"></i> ${escapeHtml(item.error)}</div>`:''}</div>`;
@@ -672,13 +600,11 @@
     });
     updateStats();
   }
-
   function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
   function escapeJs(s){ return (s||'').replace(/'/g,"\\'").replace(/\n/g,'\\n'); }
   function updateItemData(id,field,val){ let idx=filesQueue.findIndex(f=>f.id===id); if(idx!==-1) filesQueue[idx][field]=val; }
   function removeItem(id){ if(isProcessing){ showToast('Dicegah','Proses berjalan','ERROR'); return; } filesQueue=filesQueue.filter(f=>f.id!==id); renderQueue(); checkStartBtn(); }
   function clearQueue(){ if(isProcessing)return; filesQueue=[]; renderQueue(); checkStartBtn(); updateRobotStatus('IDLE','Antrean dibersihkan'); }
-  
   function updateStats(){
     let total=filesQueue.length, comp=filesQueue.filter(f=>f.status==='completed').length, proc=filesQueue.filter(f=>f.status==='processing').length, fail=filesQueue.filter(f=>f.status==='failed').length;
     document.getElementById('stat-total').innerText=total; document.getElementById('stat-success').innerText=comp;
@@ -688,13 +614,11 @@
     document.getElementById('progress-text').innerHTML = `<i class="fa-solid fa-chart-line"></i> ${comp} / ${total} berhasil (${Math.round(successPercent)}%)`;
     if(comp>0) document.getElementById('export-section').style.display='block'; else document.getElementById('export-section').style.display='none';
   }
-
   function checkStartBtn(){
     let btn=document.getElementById('btn-start');
     let ready = filesQueue.some(i=>i.status==='pending' && i.base64);
     if(ready && apiKey){ btn.disabled=false; btn.style.opacity='1'; } else { btn.disabled=true; btn.style.opacity='0.5'; }
   }
-
   function copyData(btn, txt){ if(!txt) return; let ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); showToast('Disalin','Teks tersalin ke clipboard','SUCCESS'); }
 
   // ======================== MAIN PROCESSING ========================
@@ -703,23 +627,28 @@
     if(!apiKey){ showToast('Error','Simpan API Key terlebih dahulu','ERROR'); return; }
     let pending = filesQueue.filter(i=>i.status==='pending' && i.base64);
     if(pending.length===0){ showToast('Info','Tidak ada gambar siap','INFO'); return; }
-    
-    // Mulai timer untuk history
+    // Ubah tombol menjadi STOP
+    const btn = document.getElementById('btn-start');
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i> STOP PROSES';
+    btn.onclick = stopProcessing;
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-danger');
+
     startBatchTimer();
-    
     isProcessing = true;
+    abortController = new AbortController();
     disableControls(true);
     updateRobotStatus('PROCESSING',`Memproses ${pending.length} gambar dgn ${currentProvider.toUpperCase()}...`);
     let successCount = 0;
     let failCount = 0;
     let totalProcessed = 0;
-    
     for(let i=0; i<pending.length; i++){
+      if (abortController.signal.aborted) break;
       let item = pending[i];
       updateItemStatus(item.id,'processing');
       renderQueue();
       let success = false, retryCount = 0, MAX_RETRY = 3;
-      while(!success && retryCount <= MAX_RETRY){
+      while(!success && retryCount <= MAX_RETRY && !abortController.signal.aborted){
         try{
           let meta = await callProviderAPI(item.base64);
           updateItemMetadata(item.id, meta.title, meta.keywords);
@@ -728,6 +657,7 @@
           success = true;
           successCount++;
         } catch(err){
+          if (abortController.signal.aborted) break;
           let isRateLimit = err.message.includes('429');
           if(isRateLimit && retryCount < MAX_RETRY){
             retryCount++;
@@ -748,29 +678,37 @@
       }
       totalProcessed++;
       renderQueue();
-      if(i < pending.length-1){
+      if(i < pending.length-1 && !abortController.signal.aborted){
         updateRobotStatus('PROCESSING',`Menunggu 5 detik sebelum gambar berikutnya...`);
         await new Promise(r=>setTimeout(r, 5000));
       }
     }
-    
     isProcessing = false;
     disableControls(false);
+    if (abortController && abortController.signal.aborted) {
+      // reset tombol
+      btn.innerHTML = '<i class="fa-solid fa-play"></i> MULAI PROSES';
+      btn.onclick = startProcessing;
+      btn.classList.remove('btn-danger');
+      btn.classList.add('btn-primary');
+      abortController = null;
+      updateRobotStatus('IDLE', 'Proses dihentikan.');
+    } else {
+      btn.innerHTML = '<i class="fa-solid fa-play"></i> MULAI PROSES';
+      btn.onclick = startProcessing;
+      btn.classList.remove('btn-danger');
+      btn.classList.add('btn-primary');
+      abortController = null;
+      await saveBatchHistory(currentProvider, totalProcessed, successCount, failCount);
+      if(failCount > 0) updateRobotStatus('WARNING',`${failCount} gambar gagal. Cek log.`);
+      else updateRobotStatus('SUCCESS','Batch selesai 100%');
+    }
     checkStartBtn();
-    
-    // Simpan history setelah batch selesai
-    await saveBatchHistory(currentProvider, totalProcessed, successCount, failCount);
-    
-    if(failCount > 0) updateRobotStatus('WARNING',`${failCount} gambar gagal. Cek log.`);
-    else updateRobotStatus('SUCCESS','Batch selesai 100%');
   }
-
   function updateItemStatus(id,status,err=''){ let idx=filesQueue.findIndex(f=>f.id===id); if(idx!==-1){ filesQueue[idx].status=status; filesQueue[idx].error=err; } }
   function updateItemMetadata(id,title,kw){ let idx=filesQueue.findIndex(f=>f.id===id); if(idx!==-1){ filesQueue[idx].title=title; filesQueue[idx].keywords=kw; } }
-  
   function disableControls(dis){
     document.getElementById('file-input').disabled=dis;
-    document.getElementById('btn-start').disabled=dis;
     document.getElementById('btn-clear').disabled=dis;
     document.getElementById('api-key').disabled=dis;
     document.getElementById('model-select').disabled=dis;
@@ -779,15 +717,7 @@
   }
 
   // ======================== EXPORT ========================
-  function escapeCSV(str) {
-    if (str === undefined || str === null) return '';
-    let cleaned = String(str);
-    if (cleaned.includes(',') || cleaned.includes('"') || cleaned.includes('\n') || cleaned.includes('\r')) {
-      cleaned = '"' + cleaned.replace(/"/g, '""') + '"';
-    }
-    return cleaned;
-  }
-
+  function escapeCSV(str) { if (str === undefined || str === null) return ''; let cleaned = String(str); if (cleaned.includes(',') || cleaned.includes('"') || cleaned.includes('\n') || cleaned.includes('\r')) { cleaned = '"' + cleaned.replace(/"/g, '""') + '"'; } return cleaned; }
   function exportBatch(type) {
     let completed = filesQueue.filter(f => f.status === 'completed');
     if (completed.length === 0) { showToast('Ekspor Gagal', 'Tidak ada metadata selesai', 'ERROR'); return; }
@@ -800,23 +730,12 @@
     } else {
       let html = `<?xml version="1.0" encoding="UTF-8"?><html><head><meta charset="UTF-8"><title>Metadata Stock v${APP_VERSION}</title></head><body><table border="1"><thead><tr><th>Filename</th><th>Title</th><th>Keywords</th></tr></thead><tbody>`;
       for (let item of completed) { html += `<tr><td>${escapeHtml(item.originalName)}</td><td>${escapeHtml(item.title)}</td><td>${escapeHtml(item.keywords)}</td></tr>`; }
-      html += `</tbody><tr></body></html>`;
+      html += `</tbody></table></body></html>`;
       let blob = new Blob(["\uFEFF" + html], { type: 'application/vnd.ms-excel' });
       download(blob, `metadata_${currentProvider}_${Date.now()}.xls`);
     }
   }
-
-  function download(blob, filename) {
-    let a = document.createElement('a');
-    let url = URL.createObjectURL(blob);
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Ekspor Berhasil', `File ${filename} diunduh`, 'SUCCESS');
-  }
+  function download(blob, filename) { let a = document.createElement('a'); let url = URL.createObjectURL(blob); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Ekspor Berhasil', `File ${filename} diunduh`, 'SUCCESS'); }
 
   // ======================== INIT ========================
   window.onload = ()=>{
@@ -826,8 +745,8 @@
     loadStoredKey();
     setupDragDrop();
     checkStartBtn();
-    updateRobotStatus('IDLE', `Aplikasi siap v${APP_VERSION} - Riwayat tersimpan di browser.`);
-    renderHistory(); // inisialisasi panel history jika sudah terbuka sebelumnya (hidden)
+    updateRobotStatus('IDLE', `Aplikasi siap v${APP_VERSION} - Custom override, stop button, preview sebelum export.`);
+    renderHistory();
   };
 </script>
 </body>
